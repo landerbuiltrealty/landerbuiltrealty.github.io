@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lander Built Realty – CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+    --navy: #0f1e2e; --gold: #c9a84c; --gold-light: #e8c96d;
+    --cream: #f8f4ed; --white: #ffffff; --muted: #6b7a8d;
+    --green: #2d6a4f; --red: #a33030; --border: #e2ddd4;
+    --shadow: 0 4px 24px rgba(15,30,46,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; }
+
+  header { background: var(--navy); padding: 0 20px; display: flex; align-items: center; height: 64px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.18); }
+  .logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; }
+  .logo span { color: rgba(255,255,255,0.45); font-weight: 300; font-size: 0.7rem; display: block; letter-spacing: 0.12em; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
+
+  nav { background: var(--navy); border-top: 1px solid rgba(201,168,76,0.2); display: flex; overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  nav button { flex: 1; min-width: 80px; padding: 12px 6px; background: none; border: none; color: rgba(255,255,255,0.45); font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; }
+  nav button.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+
+  .page { display: none; padding: 20px 16px 100px; max-width: 700px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--navy); margin-bottom: 4px; }
+  .section-sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 20px; }
+
+  .card { background: var(--white); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .card-name { font-weight: 700; font-size: 1rem; color: var(--navy); }
+  .card-detail { font-size: 0.8rem; color: var(--muted); margin-top: 3px; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .badge { font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .b-buy { background: #dbeafe; color: #1e40af; } .b-rent { background: #dcfce7; color: #166534; }
+  .b-sale { background: #fef3c7; color: #92400e; } .b-forrent { background: #ede9fe; color: #6d28d9; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tag { background: var(--cream); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.73rem; color: var(--navy); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  .btn { padding: 9px 16px; border-radius: 8px; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-gold { background: var(--gold); color: var(--navy); } .btn-gold:hover { background: var(--gold-light); }
+  .btn-navy { background: var(--navy); color: var(--white); }
+  .btn-green { background: var(--green); color: var(--white); }
+  .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--navy); } .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-del { background: transparent; border: 1.5px solid #fca5a5; color: var(--red); font-size: 0.75rem; padding: 7px 12px; }
+  .check-row { display:flex; align-items:center; gap:8px; background:var(--cream); border:1.5px solid var(--border); border-radius:8px; padding:9px 12px; font-size:0.82rem; font-weight:500; cursor:pointer; transition:all 0.15s; }
+  .check-row:hover { border-color:var(--gold); }
+  .check-row input[type=checkbox] { width:16px; height:16px; accent-color:var(--navy); cursor:pointer; }
+  .check-row input[type=checkbox]:checked + * { color:var(--navy); font-weight:700; }
+  .check-row:has(input:checked) { background:var(--goldlight,#fef9ee); border-color:var(--gold); }
+  .photo-thumb { position:relative; border-radius:8px; overflow:hidden; aspect-ratio:1; background:var(--cream); }
+  .photo-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-del { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:22px; height:22px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .btn-full { width: 100%; display: block; padding: 14px; font-size: 0.9rem; border-radius: 10px; text-align: center; }
+
+  .form-card { background: var(--white); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .form-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 16px; color: var(--navy); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .fg { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 130px; margin-bottom: 12px; }
+  label { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input, select, textarea { padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--navy); background: var(--cream); outline: none; transition: border 0.15s; width: 100%; }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); background: var(--white); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .stats-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .stat-box { flex: 1; background: var(--white); border-radius: 12px; padding: 16px 10px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--navy); }
+  .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+
+  .tip-box { background: var(--navy); color: var(--white); border-radius: 14px; padding: 16px 18px; margin-bottom: 20px; font-size: 0.84rem; line-height: 1.65; }
+  .tip-box strong { color: var(--gold); }
+
+  .match-card { background: linear-gradient(135deg, #fffbf0, #fff8e6); border: 1.5px solid var(--gold); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  .match-score { font-size: 0.7rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .match-names { font-weight: 700; font-size: 0.97rem; color: var(--navy); margin-bottom: 6px; }
+  .match-reason { font-size: 0.82rem; color: #555; margin-bottom: 12px; line-height: 1.55; }
+
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(15,30,46,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: var(--white); border-radius: 20px 20px 0 0; padding: 24px 20px 40px; width: 100%; max-width: 700px; max-height: 88vh; overflow-y: auto; }
+  .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+  .modal-close { background: none; border: none; font-size: 1.7rem; cursor: pointer; color: var(--muted); line-height: 1; }
+  .elabel { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; display: block; }
+  .evalue { background: var(--cream); border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; color: var(--navy); margin-bottom: 12px; }
+  .ebody { background: var(--cream); border: 1.5px solid var(--border); border-radius: 8px; padding: 12px; font-size: 0.83rem; color: var(--navy); line-height: 1.65; white-space: pre-wrap; min-height: 180px; margin-bottom: 12px; }
+
+  .ai-loading { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
+  .spinner { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .list-count { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--navy); color: var(--white); padding: 12px 24px; border-radius: 30px; font-size: 0.84rem; font-weight: 500; z-index: 300; transition: transform 0.3s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.25); pointer-events: none; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* SHUL SEARCHABLE DROPDOWN */
+  .shul-dropdown { position:absolute; left:0; right:0; background:var(--white); border:1.5px solid var(--gold); border-radius:10px; max-height:260px; overflow-y:auto; z-index:150; box-shadow:0 8px 24px rgba(15,30,46,0.15); margin-top:2px; }
+  .shul-opt { padding:10px 14px; font-size:0.85rem; cursor:pointer; color:var(--navy); transition:background 0.12s; }
+  .shul-opt:hover { background:var(--cream); color:var(--gold); font-weight:600; }
+  .shul-group { padding:6px 14px 4px; font-size:0.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; background:var(--cream); border-top:1px solid var(--border); }
+  .fg { position:relative; }
+
+  /* SEARCH BAR */
+  .search-bar { display:flex; gap:8px; margin-bottom:16px; }
+  .search-bar input { flex:1; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.88rem; background:var(--white); outline:none; }
+  .search-bar input:focus { border-color:var(--gold); }
+  .search-bar select { padding:10px 10px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.82rem; background:var(--white); outline:none; color:var(--navy); }
+
+  /* NOTES LOG */
+  .notes-log { margin-top:10px; border-top:1px solid var(--border); padding-top:10px; }
+  .note-entry { background:var(--cream); border-radius:8px; padding:8px 12px; margin-bottom:6px; font-size:0.8rem; color:var(--navy); line-height:1.5; }
+  .note-date { font-size:0.68rem; color:var(--muted); margin-bottom:2px; }
+  .note-add { display:flex; gap:6px; margin-top:8px; }
+  .note-add input { flex:1; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:0.82rem; font-family:'DM Sans',sans-serif; background:var(--white); outline:none; }
+  .note-add input:focus { border-color:var(--gold); }
+  .note-add button { padding:8px 14px; background:var(--navy); color:var(--white); border:none; border-radius:8px; font-size:0.78rem; font-weight:600; cursor:pointer; white-space:nowrap; }
+
+  /* REMINDER BADGE */
+  .reminder-badge { display:inline-flex; align-items:center; gap:4px; background:#fff3cd; border:1px solid #ffc107; border-radius:20px; padding:3px 10px; font-size:0.72rem; font-weight:600; color:#856404; margin-top:6px; }
+  .reminder-badge.overdue { background:#fde8e8; border-color:#f87171; color:var(--red); }
+  .reminder-badge.today { background:#dcfce7; border-color:#4ade80; color:#166534; }
+
+  /* SHARE BUTTONS */
+  .share-row { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .btn-whatsapp { background:#25d366; color:white; font-size:0.75rem; padding:7px 12px; }
+  .btn-sms { background:#0a84ff; color:white; font-size:0.75rem; padding:7px 12px; }
+  .btn-copy-listing { background:var(--cream); border:1.5px solid var(--border); color:var(--navy); font-size:0.75rem; padding:7px 12px; }
+
+  /* FOLLOW-UP MODAL */
+  .followup-form { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+  .followup-form label { font-size:0.72rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+  .followup-form input, .followup-form select, .followup-form textarea { padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.88rem; width:100%; outline:none; background:var(--cream); }
+  .followup-form input:focus, .followup-form select:focus { border-color:var(--gold); background:var(--white); }
+
+  /* REMINDERS PAGE */
+  .reminder-card { background:var(--white); border-radius:14px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow); border-left:4px solid var(--gold); }
+  .reminder-card.overdue { border-left-color:var(--red); }
+  .reminder-card.today { border-left-color:var(--green); }
+
+  /* UPGRADE TRACKER */
+  .upgrade-card { background:var(--white); border-radius:14px; padding:16px; margin-bottom:14px; box-shadow:var(--shadow); border:1px solid var(--border); }
+  .upgrade-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+  .upgrade-name { font-weight:700; font-size:1rem; color:var(--navy); }
+  .upgrade-sections { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .upgrade-section { background:var(--cream); border-radius:8px; padding:10px 12px; border:1px solid var(--border); }
+  .upgrade-section-title { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+  .upgrade-section.selling .upgrade-section-title { color:#b45309; }
+  .upgrade-section.buying .upgrade-section-title { color:#1e40af; }
+  .upgrade-section-detail { font-size:0.8rem; color:var(--navy); font-weight:500; }
+  .upgrade-section-sub { font-size:0.73rem; color:var(--muted); margin-top:2px; }
+  .status-pill { display:inline-block; font-size:0.68rem; font-weight:700; padding:3px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:0.06em; margin-top:4px; cursor:pointer; }
+  .status-searching   { background:#dbeafe; color:#1e40af; }
+  .status-listed      { background:#fef3c7; color:#92400e; }
+  .status-contract    { background:#ede9fe; color:#6d28d9; }
+  .status-closed      { background:#dcfce7; color:#166534; }
+  .status-waiting     { background:#f3f4f6; color:#6b7280; }
+  .chain-card { background:linear-gradient(135deg,#fffbf0,#fff8e6); border:1.5px solid var(--gold); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .chain-title { font-size:0.7rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; }
+  .chain-arrow { text-align:center; font-size:1.2rem; margin:4px 0; color:var(--gold); }
+  .chain-person { background:var(--white); border-radius:8px; padding:10px 12px; margin-bottom:2px; border:1px solid var(--border); font-size:0.82rem; }
+  .chain-person strong { color:var(--navy); }
+
+  .quick-note-btn { padding:9px 8px; border-radius:8px; border:1.5px solid var(--border); background:var(--cream); color:var(--navy); font-family:'DM Sans',sans-serif; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.15s; text-align:center; }
+  .quick-note-btn:hover { border-color:var(--gold); background:#fffbf0; }
+  .fu-btn { padding:7px 12px; border-radius:20px; border:1.5px solid var(--border); background:var(--cream); color:var(--navy); font-family:'DM Sans',sans-serif; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
+  .fu-btn:hover { border-color:var(--gold); background:#fffbf0; }
+  .timeline-item { padding:10px 0; border-bottom:1px solid var(--border); font-size:0.82rem; }
+  .timeline-date { font-size:0.7rem; color:var(--muted); margin-bottom:2px; }
+  .timeline-text { color:var(--navy); line-height:1.5; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Lander Built Realty<span>Client &amp; Listing Manager</span></div>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('dashboard')">🏠 Home</button>
+  <button onclick="showPage('clients')">👥 Clients</button>
+  <button onclick="showPage('listings')">📋 Listings</button>
+  <button onclick="showPage('match')">✨ Match</button>
+  <button onclick="showPage('upgrades')">🔄 Upgrades</button>
+  <button onclick="showPage('scanner')">📰 Scanner</button>
+  <button onclick="showPage('reminders')">🔔 Follow-Up</button>
+</nav>
+
+<!-- HOME -->
+<div id="page-dashboard" class="page active">
+  <!-- MORNING SUMMARY -->
+  <div id="morning-summary" style="margin-bottom:20px;"></div>
+  <br>
+  <div class="tip-box">
+    <strong>Welcome!</strong> Here's how it works:<br>
+    1️⃣ Add clients &amp; what they want under <strong>Clients</strong><br>
+    2️⃣ Post properties under <strong>Listings</strong><br>
+    3️⃣ Tap <strong>Match</strong> — AI finds the fits &amp; writes the emails for you 📧
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num" id="stat-clients">0</div><div class="stat-label">Clients</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-listings">0</div><div class="stat-label">Listings</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-matches">0</div><div class="stat-label">Matches</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-due" style="color:var(--red)">0</div><div class="stat-label">Due Today</div></div>
+  </div>
+  <div id="dashboard-reminders"></div>
+  <div class="card">
+    <div class="card-name" style="margin-bottom:6px">👤 New Client Call?</div>
+    <div class="card-detail" style="margin-bottom:12px">Save their name, number, and exactly what they're looking for.</div>
+    <button class="btn btn-gold btn-full" onclick="showPage('clients')">+ Add Client</button>
+  </div>
+  <div class="card">
+    <div class="card-name" style="margin-bottom:6px">🏡 Found a Property?</div>
+    <div class="card-detail" style="margin-bottom:12px">Post it from MLS or your own deals.</div>
+    <button class="btn btn-navy btn-full" onclick="showPage('listings')">+ Add Listing</button>
+  </div>
+  <div class="card">
+    <div class="card-name" style="margin-bottom:6px">✨ Ready to Match?</div>
+    <div class="card-detail" style="margin-bottom:12px">AI reviews everything and writes the client emails for you.</div>
+    <button class="btn btn-green btn-full" onclick="showPage('match')">Run AI Matching</button>
+  </div>
+  <div class="card">
+    <div class="card-name" style="margin-bottom:6px">🔄 Upgrade Tracker</div>
+    <div class="card-detail" style="margin-bottom:12px">Track clients selling & buying at the same time. AI chains them together.</div>
+    <button class="btn btn-outline btn-full" onclick="showPage('upgrades')">View Upgrade Deals</button>
+  </div>
+  <div class="card">
+    <div class="card-name" style="margin-bottom:6px">🔔 Follow-Up Reminders</div>
+    <div class="card-detail" style="margin-bottom:12px">See who you need to call back today.</div>
+    <button class="btn btn-outline btn-full" onclick="showPage('reminders')">View Follow-Ups</button>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div id="page-clients" class="page">
+  <br>
+  <div class="section-title">Clients</div>
+  <div class="section-sub">Every caller saved in one place — what they want, budget, and contact info.</div>
+
+  <!-- CSV IMPORT CARD -->
+  <div class="card" style="border: 1.5px dashed var(--gold); background: #fffbf0;">
+    <div class="card-name" style="margin-bottom:4px">📂 Import from iPhone Contacts (CSV)</div>
+    <div class="card-detail" style="margin-bottom:12px">Export your contacts as a CSV file, then upload it here. Name, phone &amp; email are imported automatically.</div>
+    <label for="csv-upload" class="btn btn-gold btn-full" style="cursor:pointer; text-align:center; display:block; padding:12px; border-radius:10px; font-size:0.88rem;">
+      📁 Choose CSV File
+    </label>
+    <input type="file" id="csv-upload" accept=".csv,.vcf" style="display:none" onchange="importCSV(this)" />
+    <div id="csv-status" style="margin-top:10px; font-size:0.8rem; color:var(--muted); text-align:center;"></div>
+    <div style="margin-top:10px; padding:10px; background:var(--cream); border-radius:8px; font-size:0.76rem; color:var(--muted); line-height:1.6;">
+      <strong style="color:var(--navy)">How to export from iPhone:</strong><br>
+      1. Download <strong>"Contacts to CSV"</strong> free app from App Store<br>
+      2. Export your contacts as CSV<br>
+      3. Come back here and tap "Choose CSV File"
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">+ New Client</div>
+    <div class="row">
+      <div class="fg"><label>Full Name *</label><input type="text" id="c-name" placeholder="Jane Smith" /></div>
+      <div class="fg"><label>Phone</label><input type="tel" id="c-phone" placeholder="(555) 000-0000" /></div>
+    </div>
+    <div class="fg"><label>Email</label><input type="email" id="c-email" placeholder="jane@email.com" /></div>
+    <div class="row">
+      <div class="fg"><label>Looking To</label>
+        <select id="c-intent"><option value="Buy">Buy</option><option value="Rent">Rent</option></select>
+      </div>
+      <div class="fg"><label>Property Type</label>
+        <select id="c-proptype"><option value="Any">Any</option><option value="House">House</option><option value="Apartment">Apartment</option><option value="Condo">Condo</option><option value="Townhouse">Townhouse</option></select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Min Budget</label><input type="text" id="c-minprice" placeholder="e.g. $300,000" /></div>
+      <div class="fg"><label>Max Budget</label><input type="text" id="c-maxprice" placeholder="e.g. $2,000,000" /></div>
+    </div>
+    <div style="background:linear-gradient(135deg,#fffbf0,#fff8e6);border:1.5px solid var(--gold);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">🏘 Income Property — Extended Budget</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5">If the property has rental income, how high can they go?</div>
+      <div class="row">
+        <div class="fg"><label>Max With Income</label><input type="text" id="c-maxprice-income" placeholder="e.g. $3,000,000" /></div>
+        <div class="fg"><label>Income Needed / mo</label><input type="text" id="c-income-needed" placeholder="e.g. $4,000/mo" /></div>
+      </div>
+      <div class="fg"><label>Income Property Type</label>
+        <select id="c-income-type">
+          <option value="">Not looking for income property</option>
+          <option value="2-Family">2-Family House</option>
+          <option value="3-Family">3-Family House</option>
+          <option value="4-Family">4-Family House</option>
+          <option value="Mixed Use">Mixed Use (store + apartments)</option>
+          <option value="Any Income">Any income-producing property</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Bedrooms (min)</label>
+        <select id="c-beds"><option value="Any">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option><option value="5">5+</option></select>
+      </div>
+      <div class="fg"><label>Bathrooms (min)</label>
+        <select id="c-baths"><option value="Any">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>Preferred Neighborhood / Near Shul</label>
+      <input type="text" id="c-areas-search" placeholder="🔍 Type shul name or avenue..." oninput="filterShuls('c')" onfocus="showShulList('c')" autocomplete="off" style="margin-bottom:4px;"/>
+      <div id="c-shul-list" class="shul-dropdown" style="display:none;"></div>
+      <input type="hidden" id="c-areas" value=""/>
+      <div id="c-areas-display" style="font-size:0.78rem;color:var(--gold);font-weight:600;min-height:18px;margin-top:2px;"></div>
+    </div>
+    <div class="fg"><label>Additional Location Notes</label>
+      <input type="text" id="c-areas-extra" placeholder="e.g. must be walking distance to shul, specific block only..." />
+    </div>
+    <div class="fg"><label>Special Requests / Notes</label><textarea id="c-notes" placeholder="e.g. needs garage, no HOA, good schools, pet-friendly..."></textarea></div>
+    <button class="btn btn-gold btn-full" onclick="addClient()">💾 Save Client</button>
+  </div>
+  <div class="list-header">
+    <div style="font-family:'Playfair Display',serif; font-size:1.1rem">Saved Clients</div>
+    <div class="list-count" id="client-count">0 clients</div>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="client-search" placeholder="🔍 Search by name, budget, notes..." oninput="renderClients()"/>
+    <select id="client-filter-intent" onchange="renderClients()">
+      <option value="">All</option>
+      <option value="Buy">Buyers</option>
+      <option value="Rent">Renters</option>
+    </select>
+  </div>
+  <div class="search-bar" style="margin-top:-8px;">
+    <select id="client-filter-area" onchange="renderClients()" style="flex:1">
+      <option value="">📍 All Neighborhoods</option>
+      <optgroup label="── BY AVENUE ──">
+        <option value="13th Ave">13th Ave</option>
+        <option value="14th Ave">14th Ave</option>
+        <option value="15th Ave">15th Ave</option>
+        <option value="16th Ave">16th Ave</option>
+        <option value="New Utrecht">New Utrecht Ave</option>
+        <option value="18th Ave">18th Ave</option>
+        <option value="Fort Hamilton">Fort Hamilton Pkwy</option>
+      </optgroup>
+      <optgroup label="── BY STREET RANGE ──">
+        <option value="36th–39th">36th – 39th St</option>
+        <option value="40th–44th">40th – 44th St</option>
+        <option value="45th–49th">45th – 49th St</option>
+        <option value="50th–54th">50th – 54th St</option>
+        <option value="55th–59th">55th – 59th St</option>
+        <option value="60th–64th">60th – 64th St</option>
+      </optgroup>
+      <optgroup label="── BY SHUL / LANDMARK ──">
+        <option value="Meor Hatefilah">Near Meor Hatefilah (20th Ave)</option>
+        <option value="Heichal Hatefilah">Near Heichal Hatefilah (56th St)</option>
+        <option value="Raslowitz">Near Raslowitz (17th Ave)</option>
+        <option value="Rachmistrivka">Near Rachmistrivka (45th St)</option>
+        <option value="Toldos Yehudah Stutchiner">Near Toldos Yehudah – Stutchiner (61st St)</option>
+        <option value="Vien">Near Vien (50th St)</option>
+        <option value="Bobov 45">Near Bobov 45</option>
+        <option value="Bobov 48">Near Bobov 48</option>
+        <option value="Munkatch">Near Munkatch</option>
+        <option value="Belz">Near Belz</option>
+        <option value="Vizhnitz">Near Vizhnitz</option>
+        <option value="Spinka">Near Spinka</option>
+        <option value="Torah Vodaas">Near Torah Vodaas</option>
+        <option value="Bais Yaakov">Near Bais Yaakov</option>
+      </optgroup>
+      <optgroup label="── NEARBY AREAS ──">
+        <option value="Flatbush">Flatbush</option>
+        <option value="Bensonhurst">Bensonhurst</option>
+        <option value="Kensington">Kensington</option>
+        <option value="Sunset Park">Sunset Park</option>
+      </optgroup>
+    </select>
+  </div>
+  <div id="clients-list"><div class="empty-state"><div class="empty-icon">👥</div>No clients yet.</div></div>
+</div>
+
+<!-- UPGRADES PAGE -->
+<div id="page-upgrades" class="page">
+  <br>
+  <div class="section-title">Upgrade Tracker</div>
+  <div class="section-sub">Clients selling to buy bigger. Track both sides and let AI chain the deals together.</div>
+  <div class="form-card">
+    <div class="form-title">🔄 Add Upgrade Client</div>
+    <div class="row">
+      <div class="fg"><label>Full Name *</label><input type="text" id="u-name" placeholder="Moshe Goldberg"/></div>
+      <div class="fg"><label>Phone</label><input type="tel" id="u-phone" placeholder="(718) 000-0000"/></div>
+    </div>
+    <div class="fg"><label>Email</label><input type="email" id="u-email" placeholder="moshe@email.com"/></div>
+    <div class="fg"><label>Upgrade Scenario</label>
+      <select id="u-scenario">
+        <option value="Sell First">🏡→🔑 Sell First, Then Buy</option>
+        <option value="Buy First">🔑→🏡 Buy First, Then Sell</option>
+        <option value="Simultaneous">🔄 Simultaneous Closing</option>
+      </select>
+    </div>
+    <div style="font-size:0.78rem;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px">🏡 SELLING</div>
+    <div class="fg"><label>Current Address</label><input type="text" id="u-sell-address" placeholder="e.g. 1423 45th St, Brooklyn"/></div>
+    <div class="row">
+      <div class="fg"><label>Type</label><select id="u-sell-type"><option>House</option><option>Apartment</option><option>Condo</option><option>Townhouse</option><option>Multi-Family</option></select></div>
+      <div class="fg"><label>Asking Price</label><input type="text" id="u-sell-price" placeholder="$1,200,000"/></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Bedrooms</label><select id="u-sell-beds"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option value="6+">6+</option></select></div>
+      <div class="fg"><label>Status</label>
+        <select id="u-sell-status"><option value="Not Listed Yet">Not Listed Yet</option><option value="Listed">Listed</option><option value="In Contract">In Contract</option><option value="Closed">Closed</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>Location / Near Shul</label><input type="text" id="u-sell-area" placeholder="e.g. Near Bobov 45, 13th Ave..."/></div>
+    <div style="height:1px;background:var(--border);margin:14px 0 10px;"></div>
+    <div style="font-size:0.78rem;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px">🔑 BUYING</div>
+    <div class="row">
+      <div class="fg"><label>Type Wanted</label><select id="u-buy-type"><option>House</option><option>Apartment</option><option>Condo</option><option>Townhouse</option><option>Multi-Family</option></select></div>
+      <div class="fg"><label>Budget</label><input type="text" id="u-buy-budget" placeholder="$1.4M–$1.8M"/></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Bedrooms Needed</label><select id="u-buy-beds"><option>2</option><option>3</option><option>4</option><option>5</option><option value="6+">6+</option><option value="7+">7+</option></select></div>
+      <div class="fg"><label>Status</label>
+        <select id="u-buy-status"><option value="Searching">Searching</option><option value="Found Property">Found Property</option><option value="In Contract">In Contract</option><option value="Closed">Closed</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>Preferred Area / Near Shul</label><input type="text" id="u-buy-area" placeholder="e.g. Near Munkatch, 50th–54th St..."/></div>
+    <div class="fg"><label>Timing / Notes</label><textarea id="u-notes" placeholder="e.g. willing to wait, needs simultaneous closing, flexible on price..."></textarea></div>
+    <button class="btn btn-gold btn-full" style="font-size:0.95rem;padding:14px;" onclick="addUpgrade()">💾 Save Upgrade Client</button>
+  </div>
+  <div class="list-header">
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem">Upgrade Clients</div>
+    <div class="list-count" id="upgrade-count">0 clients</div>
+  </div>
+  <div id="upgrades-list"><div class="empty-state"><div class="empty-icon">🔄</div>No upgrade clients yet.</div></div>
+  <div style="height:1px;background:var(--border);margin:28px 0 20px;"></div>
+  <div style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:6px;">🤝 AI Chain Matching</div>
+  <div style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;">Finds clients where one person's sale matches another's wish — chains them all into one coordinated deal.</div>
+  <button class="btn btn-green btn-full" id="chain-btn" style="font-size:0.95rem;padding:14px;" onclick="runChainMatch()">🔗 Find Chain Deals Now</button>
+  <div id="chain-results" style="margin-top:16px;"></div>
+</div>
+
+<!-- MAGAZINE SCANNER -->
+<div id="page-scanner" class="page">
+  <br>
+  <div class="section-title">📰 Daily Luach Scanner</div>
+  <div class="section-sub">AI reads today's Luach Hatzibur PDF and automatically matches every real estate ad against your clients.</div>
+
+  <!-- TODAY'S LUACH CARD -->
+  <div class="form-card" style="background:linear-gradient(135deg,var(--navy),#1a2a4a);border-color:var(--gold);">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:44px;height:44px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">📰</div>
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;color:var(--white)">Luach Hatzibur — Today's Issue</div>
+        <div id="luach-day-label" style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:2px;">Loading today's edition...</div>
+      </div>
+    </div>
+    <button class="btn btn-gold btn-full" style="font-size:1rem;padding:15px;margin-bottom:10px;" id="luach-scan-btn" onclick="scanLuach()">
+      🔍 Scan Today's Luach Now
+    </button>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.6;">
+      AI reads every real estate ad and matches against all your saved clients automatically
+    </div>
+  </div>
+
+  <!-- KOL BERAMA CARD -->
+  <div class="form-card" style="background:linear-gradient(135deg,#1a1a3a,#0d0d2b);border-color:#4f4f9f;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:44px;height:44px;background:#4f4f9f;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">📻</div>
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;color:var(--white)">Kol Berama — Today's PDF</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:2px;">kolberamamedia.com/today.pdf</div>
+      </div>
+    </div>
+    <button class="btn btn-full" id="kolberama-scan-btn" onclick="scanKolBerama()" style="font-size:1rem;padding:15px;margin-bottom:10px;background:#4f4f9f;color:white;border:none;border-radius:8px;cursor:pointer;">
+      📻 Scan Kol Berama Now
+    </button>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.6;">
+      AI reads today's Kol Berama PDF and matches real estate ads to your clients
+    </div>
+  </div>
+
+  <!-- HEIMISH AGENT CARD -->
+  <div class="form-card" style="background:linear-gradient(135deg,#1a3a1a,#0d2b0d);border-color:#2d6a4f;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:44px;height:44px;background:#2d6a4f;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🏘️</div>
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;color:var(--white)">HeimiShAgent.com</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:2px;">Frum & Heimish real estate listings — Brooklyn & Beyond</div>
+      </div>
+    </div>
+    <button class="btn btn-full" id="heimish-scan-btn" onclick="scanHeimiSh()" style="font-size:1rem;padding:15px;margin-bottom:10px;background:#2d6a4f;color:white;border:none;border-radius:8px;cursor:pointer;">
+      🏘️ Scan HeimiShAgent Now
+    </button>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.6;">
+      AI scans HeimiShAgent.com for listings matching your clients
+    </div>
+  </div>
+
+  <!-- SCAN ALL BUTTON -->
+  <div class="form-card" style="background:linear-gradient(135deg,#2a1a3a,#1a0d2b);border-color:#7c3aed;">
+    <button class="btn btn-full" id="scan-both-btn" onclick="scanBoth()" style="font-size:1rem;padding:15px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border:none;border-radius:8px;cursor:pointer;">
+      ⚡ Scan All 3 at Once — Luach + HeimiShAgent + Kol Berama
+    </button>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:8px;line-height:1.6;">
+      Runs all three scans simultaneously — maximum leads in one tap
+    </div>
+  </div>
+
+  <!-- SCAN OTHER DAYS -->
+  <div class="form-card">
+    <div class="form-title" style="font-size:0.82rem;">📅 Scan a Different Day</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;" id="day-buttons"></div>
+  </div>
+
+  <!-- MANUAL URL OVERRIDE -->
+  <div class="form-card">
+    <div class="form-title" style="font-size:0.82rem;">🔗 Or Scan Any Other Website</div>
+    <div class="fg">
+      <input type="url" id="scan-url" placeholder="Paste any URL — Jewish Press, other listings sites..." />
+    </div>
+    <div class="fg">
+      <label>What to Look For</label>
+      <select id="scan-mode">
+        <option value="both">🔄 All — Buyers, Sellers, Renters, Offices, Upstate</option>
+        <option value="listings">🏠 For Sale listings matching my buyers</option>
+        <option value="rentals">🔑 Apartments & houses for rent</option>
+        <option value="offices">🏢 Office & commercial spaces</option>
+        <option value="upstate">🌲 Upstate NY / Summer homes</option>
+        <option value="buyers">👤 Buyers/renters matching my listings</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Focus / Filter (optional)</label>
+      <input type="text" id="scan-focus" placeholder="e.g. Boro Park only, 4+ bedrooms, under $2M..." />
+    </div>
+    <button class="btn btn-navy btn-full" id="scan-btn" onclick="runScanner()">📰 Scan This URL</button>
+  </div>
+
+  <div id="scan-results"></div>
+</div>
+
+<!-- REMINDERS PAGE -->
+<div id="page-reminders" class="page">
+  <br>
+  <div class="section-title">Follow-Up Reminders</div>
+  <div class="section-sub">Everyone you need to call, text, or follow up with — sorted by due date.</div>
+  <div class="card" style="text-align:center;padding:20px;">
+    <div style="font-size:2rem;margin-bottom:8px">🔔</div>
+    <div class="card-name" style="margin-bottom:6px">Add a Reminder</div>
+    <div class="card-detail" style="margin-bottom:14px">Set a follow-up for any client directly from their card in the Clients tab.</div>
+    <button class="btn btn-gold btn-full" onclick="showPage('clients')">Go to Clients →</button>
+  </div>
+  <div id="reminders-list"></div>
+</div>
+
+<!-- LISTINGS -->
+<div id="page-listings" class="page">
+  <br>
+  <div class="section-title">Post a Listing</div>
+  <div class="section-sub">Fill in the details below and tap Save — done in under a minute from your phone.</div>
+
+  <div class="form-card">
+    <div class="form-title">📸 Property Photos</div>
+
+    <!-- PHOTO UPLOAD -->
+    <div id="photo-preview-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;"></div>
+    <label for="l-photos" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--cream);border:2px dashed var(--border);border-radius:10px;padding:20px;cursor:pointer;font-size:0.88rem;color:var(--muted);font-weight:600;transition:border 0.2s;" id="photo-label">
+      <span style="font-size:1.5rem">📷</span> Tap to Add Photos
+    </label>
+    <input type="file" id="l-photos" accept="image/*" multiple capture="environment" style="display:none" onchange="handlePhotos(this)" />
+    <div style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:6px;">Take a photo or choose from your camera roll. You can add multiple.</div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">📄 Property Flyer</div>
+    <div id="flyer-preview" style="display:none;margin-bottom:12px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);">
+      <img id="flyer-preview-img" style="width:100%;display:block;" />
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--cream);">
+        <span style="font-size:0.78rem;color:var(--muted);" id="flyer-name"></span>
+        <button onclick="removeFlyer()" style="background:none;border:none;color:var(--red);font-size:0.8rem;font-weight:700;cursor:pointer;">✕ Remove</button>
+      </div>
+    </div>
+    <label for="l-flyer" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--cream);border:2px dashed var(--border);border-radius:10px;padding:20px;cursor:pointer;font-size:0.88rem;color:var(--muted);font-weight:600;transition:border 0.2s;" id="flyer-label">
+      <span style="font-size:1.5rem">📄</span> Tap to Upload Flyer (PNG or JPG)
+    </label>
+    <input type="file" id="l-flyer" accept="image/*" style="display:none" onchange="handleFlyer(this)" />
+    <div style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:6px;">Upload your designed flyer — it will display on landerbuiltrealty.com automatically.</div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">📍 Location</div>
+    <div class="fg"><label>Street Address *</label><input type="text" id="l-address" placeholder="e.g. 1423 45th St, Brooklyn, NY 11219" /></div>
+    <div class="row">
+      <div class="fg"><label>Neighborhood / Near Shul</label>
+        <input type="text" id="l-area-search" placeholder="🔍 Type shul name or avenue..." oninput="filterShuls('l')" onfocus="showShulList('l')" autocomplete="off" style="margin-bottom:4px;"/>
+        <div id="l-shul-list" class="shul-dropdown" style="display:none;"></div>
+        <input type="hidden" id="l-area" value=""/>
+        <div id="l-area-display" style="font-size:0.78rem;color:var(--gold);font-weight:600;min-height:18px;margin-top:2px;"></div>
+      </div>
+      <div class="fg"><label>Zip Code</label><input type="text" id="l-zip" placeholder="11219" maxlength="5" /></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">🏠 Property Details</div>
+    <div class="row">
+      <div class="fg"><label>Property Type</label>
+        <select id="l-type">
+          <option value="House">🏠 House</option>
+          <option value="Apartment">🏢 Apartment</option>
+          <option value="Condo">🏙 Condo</option>
+          <option value="Townhouse">🏘 Townhouse</option>
+          <option value="Multi-Family">🏗 Multi-Family</option>
+          <option value="Co-op">🤝 Co-op</option>
+        </select>
+      </div>
+      <div class="fg"><label>For Sale or Rent?</label>
+        <select id="l-salerent">
+          <option value="Sale">💰 For Sale</option>
+          <option value="Rent">🔑 For Rent</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Attached / Detached</label>
+        <select id="l-attached">
+          <option value="Detached">Detached</option>
+          <option value="Semi-Detached">Semi-Detached</option>
+          <option value="Attached">Attached</option>
+          <option value="N/A">N/A (Apt/Condo)</option>
+        </select>
+      </div>
+      <div class="fg"><label>Stories / Floors</label>
+        <select id="l-stories">
+          <option value="1">1 Story</option>
+          <option value="2">2 Stories</option>
+          <option value="3">3 Stories</option>
+          <option value="4+">4+ Stories</option>
+          <option value="N/A">N/A</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Bedrooms</label>
+        <select id="l-beds">
+          <option value="Studio">Studio</option>
+          <option value="1">1 Bedroom</option>
+          <option value="2">2 Bedrooms</option>
+          <option value="3">3 Bedrooms</option>
+          <option value="4">4 Bedrooms</option>
+          <option value="5">5 Bedrooms</option>
+          <option value="6">6 Bedrooms</option>
+          <option value="7+">7+ Bedrooms</option>
+        </select>
+      </div>
+      <div class="fg"><label>Bathrooms</label>
+        <select id="l-baths">
+          <option value="1">1 Bath</option>
+          <option value="1.5">1.5 Baths</option>
+          <option value="2">2 Baths</option>
+          <option value="2.5">2.5 Baths</option>
+          <option value="3">3 Baths</option>
+          <option value="3.5">3.5 Baths</option>
+          <option value="4+">4+ Baths</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Square Footage</label>
+        <select id="l-sqft">
+          <option value="">Unknown</option>
+          <option value="Under 800 sqft">Under 800 sqft</option>
+          <option value="800–1,200 sqft">800–1,200 sqft</option>
+          <option value="1,200–1,800 sqft">1,200–1,800 sqft</option>
+          <option value="1,800–2,500 sqft">1,800–2,500 sqft</option>
+          <option value="2,500–3,500 sqft">2,500–3,500 sqft</option>
+          <option value="3,500+ sqft">3,500+ sqft</option>
+        </select>
+      </div>
+      <div class="fg"><label>Floor (if Apt)</label>
+        <select id="l-floor">
+          <option value="">N/A</option>
+          <option value="Garden/Basement">Garden/Basement</option>
+          <option value="1st Floor">1st Floor</option>
+          <option value="2nd Floor">2nd Floor</option>
+          <option value="3rd Floor">3rd Floor</option>
+          <option value="4th Floor">4th Floor</option>
+          <option value="5th+ Floor">5th+ Floor</option>
+          <option value="Top Floor">Top Floor</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">💰 Pricing</div>
+    <div class="fg"><label>Asking Price / Monthly Rent *</label><input type="text" id="l-price" placeholder="e.g. $850,000 or $3,200/mo" /></div>
+    <div class="row">
+      <div class="fg"><label>Price Negotiable?</label>
+        <select id="l-nego">
+          <option value="Negotiable">Negotiable</option>
+          <option value="Firm">Firm Price</option>
+          <option value="Best Offer">Best Offer</option>
+        </select>
+      </div>
+      <div class="fg"><label>Property Tax / mo</label><input type="text" id="l-tax" placeholder="e.g. $800/mo" /></div>
+    </div>
+    <div class="fg"><label>MLS # (if applicable)</label><input type="text" id="l-mls" placeholder="MLS# 12345678" /></div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">✅ Features & Amenities</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+      <label class="check-row"><input type="checkbox" id="f-garage" /> 🚗 Garage</label>
+      <label class="check-row"><input type="checkbox" id="f-driveway" /> 🛣 Driveway</label>
+      <label class="check-row"><input type="checkbox" id="f-backyard" /> 🌿 Backyard</label>
+      <label class="check-row"><input type="checkbox" id="f-basement" /> 🏚 Basement</label>
+      <label class="check-row"><input type="checkbox" id="f-sukkah" /> 🌿 Sukkah Porch</label>
+      <label class="check-row"><input type="checkbox" id="f-laundry" /> 🧺 In-Unit Laundry</label>
+      <label class="check-row"><input type="checkbox" id="f-ac" /> ❄️ Central A/C</label>
+      <label class="check-row"><input type="checkbox" id="f-heat" /> 🔥 Central Heat</label>
+      <label class="check-row"><input type="checkbox" id="f-dishwasher" /> 🍽 Dishwasher</label>
+      <label class="check-row"><input type="checkbox" id="f-newkitchen" /> 🍳 Updated Kitchen</label>
+      <label class="check-row"><input type="checkbox" id="f-newbath" /> 🚿 Updated Bathroom</label>
+      <label class="check-row"><input type="checkbox" id="f-hardwood" /> 🪵 Hardwood Floors</label>
+      <label class="check-row"><input type="checkbox" id="f-storage" /> 📦 Extra Storage</label>
+      <label class="check-row"><input type="checkbox" id="f-elevator" /> 🛗 Elevator</label>
+      <label class="check-row"><input type="checkbox" id="f-shabbos" /> ✡️ Shabbos Elevator</label>
+      <label class="check-row"><input type="checkbox" id="f-pets" /> 🐾 Pets Allowed</label>
+    </div>
+    <div class="fg" style="margin-top:12px"><label>Additional Details / Description</label>
+      <textarea id="l-notes" placeholder="Anything else to mention — e.g. freshly painted, near shul, quiet block, available immediately..."></textarea>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">📅 Availability</div>
+    <div class="row">
+      <div class="fg"><label>Available</label>
+        <select id="l-avail">
+          <option value="Immediately">Immediately</option>
+          <option value="30 Days">Within 30 Days</option>
+          <option value="60 Days">Within 60 Days</option>
+          <option value="After Yom Tov">After Yom Tov</option>
+          <option value="After Pesach">After Pesach</option>
+          <option value="After Summer">After Summer</option>
+          <option value="TBD">TBD</option>
+        </select>
+      </div>
+      <div class="fg"><label>Status</label>
+        <select id="l-status" onchange="toggleSoldNote(this.value)">
+          <option value="Active">Active</option>
+          <option value="Pending">Pending</option>
+          <option value="Under Contract">Under Contract</option>
+          <option value="Sold">✅ Sold — show on website</option>
+        </select>
+      </div>
+    </div>
+    <div id="sold-note-row" style="display:none;">
+      <div class="fg"><label>Sold Note (optional)</label>
+        <input type="text" id="l-sold-note" placeholder="e.g. Sold in 6 days · Multiple offers · Over asking"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED LISTING TOGGLE -->
+  <div style="background:linear-gradient(135deg,#fffbf0,#fff8e6);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px;">
+    <label style="display:flex;align-items:center;gap:14px;cursor:pointer;">
+      <div style="position:relative;flex-shrink:0;">
+        <input type="checkbox" id="l-featured" style="width:22px;height:22px;accent-color:var(--gold);cursor:pointer;"/>
+      </div>
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">⭐ Feature this listing on my website homepage</div>
+        <div style="font-size:0.74rem;color:var(--muted);margin-top:2px;line-height:1.5;">Checking this will display this property prominently on the front page of landerbuiltrealty.com — visible to every visitor before they even search.</div>
+      </div>
+    </label>
+  </div>
+
+  <button class="btn btn-navy btn-full" style="font-size:1rem;padding:16px;border-radius:12px;margin-bottom:10px;" onclick="addListing()">💾 Save & Post Listing</button>
+
+  <div class="list-header" style="margin-top:24px;">
+    <div style="font-family:'Playfair Display',serif; font-size:1.1rem">Saved Listings</div>
+    <div class="list-count" id="listing-count">0 listings</div>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="listing-search" placeholder="🔍 Search listings..." oninput="renderListings()"/>
+    <select id="listing-filter" onchange="renderListings()">
+      <option value="">All</option>
+      <option value="Sale">For Sale</option>
+      <option value="Rent">For Rent</option>
+    </select>
+  </div>
+  <div id="listings-list"><div class="empty-state"><div class="empty-icon">🏡</div>No listings yet.</div></div>
+</div>
+
+<!-- REMINDERS PAGE -->
+<div id="page-reminders" class="page">
+  <br>
+  <div class="section-title">Follow-Up Reminders</div>
+  <div class="section-sub">Everyone you need to call, text, or email — sorted by date.</div>
+  <div id="reminders-list"><div class="empty-state"><div class="empty-icon">🔔</div>No follow-ups set yet.<br><small style="font-size:0.8rem">Open a client card and tap "Set Follow-Up".</small></div></div>
+</div>
+
+<!-- MATCH -->
+<div id="page-match" class="page">
+  <br>
+  <div class="section-title">AI Matching</div>
+  <div class="section-sub">AI reads your clients and listings, finds the best matches, and writes the emails — you just hit send.</div>
+  <div class="card" style="text-align:center; padding:24px 20px;">
+    <div style="font-size:2.2rem; margin-bottom:10px">✨</div>
+    <div class="card-name" style="margin-bottom:6px">Run AI Match</div>
+    <div class="card-detail" style="margin-bottom:16px">Compares every client wish list against every listing and finds the strongest fits.</div>
+    <button class="btn btn-green btn-full" id="match-btn" onclick="runMatching()">Find Matches Now</button>
+  </div>
+  <div id="match-results"></div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div class="modal-bg" id="email-modal">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-title">📧 Email Draft</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <span class="elabel">From</span>
+    <div class="evalue">YN@LanderBuiltRealty.com</div>
+    <span class="elabel">To</span>
+    <div class="evalue" id="modal-to">—</div>
+    <span class="elabel">Subject</span>
+    <div class="evalue" id="modal-subject">—</div>
+    <span class="elabel">Message</span>
+    <div class="ebody" id="modal-body">—</div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-gold" style="flex:1" onclick="openGmail()">Open in Mail ↗</button>
+      <button class="btn btn-outline" style="flex:1" onclick="copyEmail()">Copy Text</button>
+    </div>
+    <div style="margin-top:10px; font-size:0.73rem; color:var(--muted); text-align:center;">Tap "Open in Mail" on your iPhone to send directly</div>
+  </div>
+</div>
+
+<!-- REMINDER MODAL -->
+<div class="modal-bg" id="reminder-modal">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-title">🔔 Set Follow-Up Reminder</div>
+      <button class="modal-close" onclick="closeReminderModal()">×</button>
+    </div>
+    <div class="followup-form">
+      <div><label>Client</label><div id="reminder-client-name" style="font-weight:700;font-size:1rem;padding:8px 0;"></div></div>
+      <div><label>Follow-Up Date</label><input type="date" id="reminder-date" /></div>
+      <div><label>Reminder Type</label>
+        <select id="reminder-type">
+          <option value="Call">📞 Call them</option>
+          <option value="Text">💬 Send a text</option>
+          <option value="Email">📧 Send an email</option>
+          <option value="Show property">🏠 Show a property</option>
+          <option value="Check in">👋 Check in</option>
+        </select>
+      </div>
+      <div><label>Note (optional)</label><input type="text" id="reminder-note" placeholder="e.g. Call about 45th St listing" /></div>
+      <button class="btn btn-gold btn-full" onclick="saveReminder()">💾 Save Reminder</button>
+      <button class="btn btn-outline btn-full" onclick="clearReminder()" style="margin-top:-4px">🗑 Remove Reminder</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- WEBSITE PAGE -->
+<div class="toast" id="toast"></div>
+
+<script>
+const BROKER_EMAIL = 'YN@LanderBuiltRealty.com';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbynI-e97XQWpTiFHkQiOUnVPewjumY9sstYwqwvAe55qZhieWXfmbfgbGXqvLicnwI/exec';
+
+/* ── FLYER HANDLER ── */
+let flyerData = null;
+let flyerMime = null;
+let flyerFileName = null;
+
+function handleFlyer(input) {
+  const file = input.files[0];
+  if (!file) return;
+  flyerFileName = file.name;
+  flyerMime = file.type;
+  const reader = new FileReader();
+  reader.onload = e => {
+    flyerData = e.target.result;
+    document.getElementById('flyer-preview-img').src = flyerData;
+    document.getElementById('flyer-name').textContent = file.name;
+    document.getElementById('flyer-preview').style.display = 'block';
+    document.getElementById('flyer-label').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeFlyer() {
+  flyerData = null; flyerMime = null; flyerFileName = null;
+  document.getElementById('l-flyer').value = '';
+  document.getElementById('flyer-preview').style.display = 'none';
+  document.getElementById('flyer-label').style.display = 'flex';
+}
+
+async function uploadFlyerToDrive(base64Data, mimeType, fileName) {
+  const pure = base64Data.split(',')[1];
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'uploadFlyer', imageData: pure, mimeType, fileName })
+  });
+  const json = await res.json();
+  if (json.success) return json.fileUrl;
+  throw new Error(json.error || 'Upload failed');
+}
+
+async function syncListingToSheets(listing, flyerUrl) {
+  await fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'saveListing',
+      id: String(listing.id),
+      address: listing.address,
+      neighborhood: listing.area || '',
+      type: listing.type,
+      saleRent: listing.salerent,
+      beds: listing.beds,
+      baths: listing.baths,
+      price: listing.price || '',
+      sqft: listing.sqft || '',
+      status: listing.status || 'Active',
+      featured: listing.featured || false,
+      features: (listing.features || []).join(', '),
+      notes: listing.notes || '',
+      flyerUrl: flyerUrl || '',
+      photos: ''
+    })
+  });
+}
+
+async function deleteListingFromSheets(id) {
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'deleteListing', id: String(id) })
+    });
+  } catch(e) { /* silent */ }
+}
+
+
+let listings = JSON.parse(localStorage.getItem('lbr_listings') || '[]');
+let matchCount = parseInt(localStorage.getItem('lbr_mc') || '0');
+let upgrades = JSON.parse(localStorage.getItem('lbr_upgrades') || '[]');
+let currentEmail = {};
+
+function save() {
+  localStorage.setItem('lbr_clients',  JSON.stringify(clients));
+  localStorage.setItem('lbr_listings', JSON.stringify(listings));
+  localStorage.setItem('lbr_mc', matchCount);
+  updateStats();
+}
+function saveListings(){
+  localStorage.setItem('lbr_listings', JSON.stringify(listings));
+  updateStats();
+}
+function toggleFeatured(id){
+  // Only one featured at a time
+  listings = listings.map(l => ({...l, featured: String(l.id)===String(id) ? !l.featured : false}));
+  saveListings();
+  renderListings();
+  const f = listings.find(l=>l.featured);
+  toast(f ? `⭐ "${f.address}" is now featured on your website!` : 'Featured listing removed from homepage.');
+}
+function updateStats() {
+  document.getElementById('stat-clients').textContent  = clients.length;
+  document.getElementById('stat-listings').textContent = listings.length;
+  document.getElementById('stat-matches').textContent  = matchCount;
+}
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + id);
+  if(pageEl) pageEl.classList.add('active');
+  ['dashboard','clients','listings','match','upgrades','scanner','reminders','website'].forEach((n,i) => { if(n===id) { const btn = document.querySelectorAll('nav button')[i]; if(btn) btn.classList.add('active'); } });
+  if (id==='clients')  renderClients();
+  if (id==='listings') renderListings();
+  if (id==='upgrades') renderUpgrades();
+  if (id==='reminders') renderReminders();
+  if (id==='dashboard') { renderReminders(); updateStats(); }
+  if (id==='website') { renderFeaturedListing(); renderSoldGrid(); filterListings(); }
+  window.scrollTo(0,0);
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── CLIENTS ── */
+function addClient() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) { toast('⚠️ Please enter a name.'); return; }
+  clients.unshift({
+    id: Date.now(), name,
+    phone:   document.getElementById('c-phone').value.trim(),
+    email:   document.getElementById('c-email').value.trim(),
+    intent:  document.getElementById('c-intent').value,
+    proptype:document.getElementById('c-proptype').value,
+    minprice:    document.getElementById('c-minprice').value.trim(),
+    maxprice:    document.getElementById('c-maxprice').value.trim(),
+    maxIncomePrice: document.getElementById('c-maxprice-income').value.trim(),
+    incomeNeeded:   document.getElementById('c-income-needed').value.trim(),
+    incomeType:     document.getElementById('c-income-type').value,
+    beds:    document.getElementById('c-beds').value,
+    baths:   document.getElementById('c-baths').value,
+    areas:   (document.getElementById('c-areas').value + (document.getElementById('c-areas-extra').value.trim() ? ' — ' + document.getElementById('c-areas-extra').value.trim() : '')),
+    notes:   document.getElementById('c-notes').value.trim(),
+    added:   new Date().toLocaleDateString()
+  });
+  save();
+  ['c-name','c-phone','c-email','c-minprice','c-maxprice','c-maxprice-income','c-income-needed','c-areas-extra','c-notes'].forEach(i => document.getElementById(i).value='');
+  renderClients(); toast('✅ Client saved!');
+}
+function renderClients() {
+  const el = document.getElementById('clients-list');
+  const search = (document.getElementById('client-search')?.value||'').toLowerCase();
+  const filterIntent = document.getElementById('client-filter-intent')?.value||'';
+  const filterArea = (document.getElementById('client-filter-area')?.value||'').toLowerCase();
+  let filtered = clients.filter(c=>{
+    const matchSearch = !search || c.name.toLowerCase().includes(search) || (c.areas||'').toLowerCase().includes(search) || (c.minprice||'').toLowerCase().includes(search) || (c.maxprice||'').toLowerCase().includes(search) || (c.notes||'').toLowerCase().includes(search);
+    const matchIntent = !filterIntent || c.intent===filterIntent;
+    const matchArea   = !filterArea || (c.areas||'').toLowerCase().includes(filterArea);
+    return matchSearch && matchIntent && matchArea;
+  });
+  document.getElementById('client-count').textContent = clients.length+(clients.length===1?' client':' clients');
+  if (!filtered.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">👥</div>'+(search?'No clients match your search.':'No clients yet.')+'</div>'; return; }
+  el.innerHTML = filtered.map(c=>{
+    const today = new Date().toISOString().split('T')[0];
+    const rem = c.reminder;
+    let remBadge = '';
+    if(rem && rem.date) {
+      const isToday = rem.date===today, isPast = rem.date<today;
+      remBadge = `<div class="reminder-badge ${isPast?'overdue':isToday?'today':''}">${isPast?'⚠️ Overdue':isToday?'🔔 Due Today':'⏰'} Follow up: ${rem.date}${rem.note?' — '+rem.note:''}</div>`;
+    }
+    const notes = c.callLog||[];
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-name">${c.name}</div>
+        <div class="card-detail">${c.phone?'📞 <a href="tel:'+c.phone.replace(/\D/g,'')+'" style="color:inherit">'+c.phone+'</a>':''}${c.email?' · '+c.email:''}</div></div>
+        <span class="badge ${c.intent==='Buy'?'b-buy':'b-rent'}">${c.intent==='Buy'?'Buyer':'Renter'}</span>
+      </div>
+      <div class="tags">
+        ${c.proptype!=='Any'?`<span class="tag">🏠 ${c.proptype}</span>`:''}
+        ${c.minprice||c.maxprice?`<span class="tag">💰 ${c.minprice||'?'} – ${c.maxprice||'?'}</span>`:''}
+        ${c.maxIncomePrice?`<span class="tag" style="background:#fffbf0;border-color:var(--gold);color:#92400e">🏘 Up to ${c.maxIncomePrice} w/income</span>`:''}
+        ${c.incomeType&&c.incomeType!==''?`<span class="tag" style="background:#fffbf0;border-color:var(--gold);color:#92400e">${c.incomeType}</span>`:''}        ${c.beds!=='Any'?`<span class="tag">🛏 ${c.beds} bed</span>`:''}
+        ${c.baths!=='Any'?`<span class="tag">🚿 ${c.baths} bath</span>`:''}
+        ${c.areas?`<span class="tag">📍 ${c.areas}</span>`:''}
+      </div>
+      ${c.notes?`<div class="card-detail" style="margin-top:8px">📝 ${c.notes}</div>`:''}
+      ${remBadge}
+      <div class="card-detail" style="margin-top:6px;font-size:0.72rem">Added ${c.added}</div>
+
+      <div class="notes-log">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">📞 Call Log & Notes</div>
+        ${notes.length ? notes.map(n=>`<div class="note-entry"><div class="note-date">${n.date}</div>${n.text}</div>`).join('') : '<div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px">No notes yet.</div>'}
+        <div class="note-add">
+          <input type="text" id="note-input-${c.id}" placeholder="Add a note about this call..." />
+          <button onclick="addNote(${c.id})">+ Add</button>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:12px">
+        <button class="btn btn-gold" onclick="openReminderModal(${c.id})">🔔 Set Follow-Up</button>
+        ${c.phone?`<a href="tel:${c.phone.replace(/\D/g,'')}" class="btn btn-outline">📞 Call</a>`:''}
+        ${c.phone?`<a href="sms:${c.phone.replace(/\D/g,'')}" class="btn btn-outline">💬 Text</a>`:''}
+        <button class="btn btn-del" onclick="delClient(${c.id})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function delClient(id) {
+  if(!confirm('Delete this client?')) return;
+  clients=clients.filter(c=>c.id!==id); save(); renderClients(); toast('Deleted.');
+}
+function addNote(clientId) {
+  const input = document.getElementById('note-input-'+clientId);
+  const text = input?.value.trim();
+  if(!text) return;
+  const c = clients.find(c=>c.id===clientId);
+  if(!c) return;
+  if(!c.callLog) c.callLog=[];
+  c.callLog.unshift({ date: new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), text });
+  save(); renderClients(); toast('📝 Note saved!');
+}
+
+/* ── PHOTO HANDLER ── */
+let listingPhotos = [];
+function handlePhotos(input) {
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => { listingPhotos.push(e.target.result); renderPhotoGrid(); };
+    reader.readAsDataURL(file);
+  });
+}
+function renderPhotoGrid() {
+  const grid = document.getElementById('photo-preview-grid');
+  if (!grid) return;
+  grid.innerHTML = listingPhotos.map((src,i)=>`<div class="photo-thumb"><img src="${src}" alt="photo"/><button class="photo-del" onclick="removePhoto(${i})">×</button></div>`).join('');
+  const lbl = document.getElementById('photo-label');
+  if(lbl) lbl.innerHTML = listingPhotos.length>0 ? `<span style="font-size:1.2rem">📷</span> Add More Photos (${listingPhotos.length} added)` : `<span style="font-size:1.5rem">📷</span> Tap to Add Photos`;
+}
+function removePhoto(i) { listingPhotos.splice(i,1); renderPhotoGrid(); }
+
+function getChecked() {
+  const map = {garage:'Garage',driveway:'Driveway',backyard:'Backyard',basement:'Basement',sukkah:'Sukkah Porch',laundry:'In-Unit Laundry',ac:'Central A/C',heat:'Central Heat',dishwasher:'Dishwasher',newkitchen:'Updated Kitchen',newbath:'Updated Bathroom',hardwood:'Hardwood Floors',storage:'Extra Storage',elevator:'Elevator',shabbos:'Shabbos Elevator',pets:'Pets Allowed'};
+  return Object.keys(map).filter(k=>document.getElementById('f-'+k)?.checked).map(k=>map[k]);
+}
+
+/* ── LISTINGS ── */
+async function addListing() {
+  const address = document.getElementById('l-address').value.trim();
+  if (!address) { toast('⚠️ Please enter an address.'); return; }
+
+  const saveBtn = document.querySelector('[onclick="addListing()"]');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Saving…'; }
+
+  let flyerUrl = '';
+  try {
+    if (flyerData) {
+      toast('📤 Uploading flyer…');
+      flyerUrl = await uploadFlyerToDrive(flyerData, flyerMime, flyerFileName);
+    }
+  } catch(e) {
+    toast('⚠️ Flyer upload failed — listing saved locally only.');
+  }
+
+  const listing = {
+    id: Date.now(), address,
+    area:     document.getElementById('l-area').value,
+    zip:      document.getElementById('l-zip').value.trim(),
+    type:     document.getElementById('l-type').value,
+    salerent: document.getElementById('l-salerent').value,
+    attached: document.getElementById('l-attached').value,
+    stories:  document.getElementById('l-stories').value,
+    beds:     document.getElementById('l-beds').value,
+    baths:    document.getElementById('l-baths').value,
+    sqft:     document.getElementById('l-sqft').value,
+    floor:    document.getElementById('l-floor').value,
+    price:    document.getElementById('l-price').value.trim(),
+    nego:     document.getElementById('l-nego').value,
+    tax:      document.getElementById('l-tax').value.trim(),
+    mls:      document.getElementById('l-mls').value.trim(),
+    avail:    document.getElementById('l-avail').value,
+    status:   document.getElementById('l-status').value,
+    soldNote: document.getElementById('l-sold-note').value.trim(),
+    sold:     document.getElementById('l-status').value === 'Sold',
+    features: getChecked(),
+    notes:    document.getElementById('l-notes').value.trim(),
+    featured: document.getElementById('l-featured').checked,
+    photos:   [...listingPhotos],
+    flyerUrl,
+    added:    new Date().toLocaleDateString()
+  };
+
+  listings.unshift(listing);
+  save();
+
+  // Sync to Google Sheets in background
+  try {
+    await syncListingToSheets(listing, flyerUrl);
+  } catch(e) { /* silent — already saved locally */ }
+
+  ['l-address','l-zip','l-price','l-tax','l-mls','l-notes'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  const featEl = document.getElementById('l-featured'); if(featEl) featEl.checked=false;
+  Object.keys({garage:1,driveway:1,backyard:1,basement:1,sukkah:1,laundry:1,ac:1,heat:1,dishwasher:1,newkitchen:1,newbath:1,hardwood:1,storage:1,elevator:1,shabbos:1,pets:1}).forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.checked=false;});
+  listingPhotos=[]; renderPhotoGrid();
+  removeFlyer();
+  if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Save & Post Listing'; }
+  renderListings();
+  toast('✅ Listing saved & live on your website!');
+}
+function toggleSoldNote(val){
+  const row = document.getElementById('sold-note-row');
+  if(row) row.style.display = val==='Sold' ? 'block' : 'none';
+}
+
+function renderListings() {
+  const el = document.getElementById('listings-list');
+  const search = (document.getElementById('listing-search')?.value||'').toLowerCase();
+  const filterSR = document.getElementById('listing-filter')?.value||'';
+  let filtered = listings.filter(l=>{
+    const matchSearch = !search || l.address.toLowerCase().includes(search) || (l.area||'').toLowerCase().includes(search) || (l.price||'').toLowerCase().includes(search) || (l.notes||'').toLowerCase().includes(search);
+    const matchSR = !filterSR || l.salerent===filterSR;
+    return matchSearch && matchSR;
+  });
+  document.getElementById('listing-count').textContent = listings.length+(listings.length===1?' listing':' listings');
+  if (!filtered.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">🏡</div>'+(search?'No listings match your search.':'No listings yet.')+'</div>'; return; }
+  el.innerHTML = filtered.map(l=>{
+    const shareText = encodeURIComponent(`🏠 *${l.salerent==='Sale'?'FOR SALE':'FOR RENT'}* — ${l.address}\n💰 ${l.price||'Price on Request'}\n🛏 ${l.beds} bed · 🚿 ${l.baths} bath · ${l.type}${l.attached&&l.attached!=='N/A (Apt/Condo)'?' · '+l.attached:''}\n📍 ${l.area||'Boro Park'}${l.zip?' '+l.zip:''}\n${l.features&&l.features.length?'✅ '+l.features.join(', ')+'\n':''}${l.notes?'📝 '+l.notes+'\n':''}📞 Call/Text: 917-567-1780\n🌐 landerbuiltrealty.com`);
+    return `<div class="card">
+      ${l.flyerUrl?`<div style="margin-bottom:12px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);"><img src="${l.flyerUrl}" style="width:100%;display:block;" loading="lazy"/><div style="padding:5px 10px;background:var(--cream);font-size:0.72rem;color:var(--muted);">📄 Flyer — live on website</div></div>`:''}
+      ${!l.flyerUrl && l.photos&&l.photos.length?`<div style="display:grid;grid-template-columns:repeat(${Math.min(l.photos.length,3)},1fr);gap:6px;margin-bottom:12px;border-radius:10px;overflow:hidden;">${l.photos.slice(0,3).map(p=>`<img src="${p}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;"/>`).join('')}</div>`:''}
+      <div class="card-header">
+        <div><div class="card-name">${l.address}${l.featured?` <span style="background:var(--gold);color:var(--navy);font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:0.06em;vertical-align:middle;">⭐ FEATURED</span>`:''}</div><div class="card-detail">📍 ${l.area||''}${l.zip?' · '+l.zip:''}</div></div>
+        <span class="badge ${l.salerent==='Sale'?'b-sale':'b-forrent'}">${l.salerent==='Sale'?'For Sale':'For Rent'}</span>
+      </div>
+      <div style="font-size:1.15rem;font-weight:700;color:var(--gold);margin:4px 0 8px;">${l.price||'Price on Request'} ${l.nego?`<span style="font-size:0.7rem;color:var(--muted);font-weight:400">· ${l.nego}</span>`:''}</div>
+      <div class="tags">
+        <span class="tag">🏠 ${l.type}</span>
+        ${l.attached&&l.attached!=='N/A (Apt/Condo)'?`<span class="tag">${l.attached}</span>`:''}
+        <span class="tag">🛏 ${l.beds}</span>
+        <span class="tag">🚿 ${l.baths}</span>
+        ${l.sqft?`<span class="tag">📐 ${l.sqft}</span>`:''}
+        ${l.floor?`<span class="tag">🏢 ${l.floor}</span>`:''}
+        ${l.avail?`<span class="tag">📅 ${l.avail}</span>`:''}
+        ${l.mls?`<span class="tag" style="color:var(--gold);font-weight:600">MLS# ${l.mls}</span>`:''}
+      </div>
+      ${l.features&&l.features.length?`<div class="tags" style="margin-top:8px">${l.features.map(f=>`<span class="tag" style="background:#efffef;border-color:#b7e4b7">✅ ${f}</span>`).join('')}</div>`:''}
+      ${l.notes?`<div class="card-detail" style="margin-top:8px">📝 ${l.notes}</div>`:''}
+      ${l.tax?`<div class="card-detail" style="margin-top:4px">🏛 Taxes: ${l.tax}</div>`:''}
+      <div class="card-detail" style="margin-top:6px;font-size:0.72rem;display:flex;gap:12px;"><span>Added ${l.added}</span><span style="color:${l.status==='Active'?'var(--green)':l.status==='Sold'?'var(--gold)':l.status==='Pending'?'#b45309':'var(--muted)'}">● ${l.status||'Active'}</span>${l.soldNote?`<span style="color:var(--gold);font-style:italic;">${l.soldNote}</span>`:''}</div>
+      <div class="share-row">
+        <a href="#" onclick="shareWhatsApp('${l.id}');return false;" class="btn btn-whatsapp">📲 WhatsApp</a>
+        <a href="#" onclick="shareSMS('${l.id}');return false;" class="btn btn-sms">💬 Text</a>
+        <button class="btn btn-copy-listing" onclick="copyListing('${l.id}')">📋 Copy</button>
+        <button class="btn" onclick="toggleFeatured(${l.id})" style="font-size:0.72rem;padding:5px 10px;background:${l.featured?'var(--gold)':'var(--border)'};color:${l.featured?'var(--navy)':'var(--muted)'};border:none;border-radius:6px;" title="${l.featured?'Remove from homepage':'Feature on homepage'}">⭐</button>
+        <button class="btn" onclick="markSold(${l.id})" style="font-size:0.72rem;padding:5px 10px;background:${l.status==='Sold'?'var(--green)':'var(--border)'};color:${l.status==='Sold'?'white':'var(--muted)'};border:none;border-radius:6px;" title="${l.status==='Sold'?'Mark as Active':'Mark as Sold'}">✅ ${l.status==='Sold'?'Sold':'Mark Sold'}</button>
+        <button class="btn btn-del" onclick="delListing(${l.id})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function delListing(id) {
+  if(!confirm('Delete this listing?')) return;
+  listings=listings.filter(l=>l.id!==id); save(); renderListings();
+  deleteListingFromSheets(id);
+  toast('Deleted.');
+}
+
+function markSold(id) {
+  const l = listings.find(l=>l.id===id);
+  if(!l) return;
+  if(l.status==='Sold') {
+    l.status='Active';
+    toast('✅ Marked as Active again.');
+  } else {
+    l.status='Sold';
+    l.soldDate = new Date().toLocaleDateString();
+    l.featured = false; // remove from featured when sold
+    toast('🏆 Marked as Sold! Will appear on website Recently Sold section.');
+  }
+  save(); renderListings();
+}
+
+/* ── AI MATCHING ── */
+async function runMatching() {
+  if (!clients.length || !listings.length) { toast('⚠️ Need at least 1 client and 1 listing.'); return; }
+  const btn = document.getElementById('match-btn');
+  btn.disabled=true; btn.textContent='Running…';
+  const res = document.getElementById('match-results');
+  res.innerHTML='<div class="ai-loading"><div class="spinner"></div>AI is reviewing your clients and listings…</div>';
+
+  const prompt=`You are a real estate assistant for Lander Built Realty. The broker's email is ${BROKER_EMAIL}.
+
+CLIENTS:
+${clients.map((c,i)=>`${i+1}. Name:${c.name} | Intent:${c.intent} | Type:${c.proptype} | Budget:${c.minprice||'?'}-${c.maxprice||'?'}${c.maxIncomePrice?' | INCOME BUDGET up to:'+c.maxIncomePrice+' if property earns '+( c.incomeNeeded||'rental income')+' ('+( c.incomeType||'income property')+')'  :''} | Beds:${c.beds} | Baths:${c.baths} | Areas:${c.areas||'any'} | Notes:${c.notes||''} | Email:${c.email||'none'} | Phone:${c.phone||'none'}`).join('\n')}
+
+LISTINGS:
+${listings.map((l,i)=>`${i+1}. Address:${l.address} | Type:${l.type} | For:${l.salerent} | Price:${l.price||'?'} | Area:${l.area||'?'} | Beds:${l.beds} | Baths:${l.baths} | MLS:${l.mls||'n/a'} | Features:${l.notes||''}`).join('\n')}
+
+Find the best client-to-listing matches. Return a JSON array only — no markdown, no extra text. Each object must have:
+- clientName (string)
+- clientEmail (string, empty if none)
+- listingAddress (string)
+- matchReason (1-2 sentences: why this is a good fit)
+- emailSubject (professional subject line)
+- emailBody (full professional email FROM the broker at ${BROKER_EMAIL} TO the client. Mention specific property details. Invite them to schedule a showing. Sign off: "Warm regards,\\nLander Built Realty\\n${BROKER_EMAIL}")`;
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await r.json();
+    const text = data.content.map(b=>b.text||'').join('');
+    const matches = JSON.parse(text.replace(/```json|```/g,'').trim());
+    matchCount += matches.length; save();
+
+    if (!matches.length) {
+      res.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>No strong matches found yet. Add more clients or listings.</div>';
+    } else {
+      window._matches = matches;
+      res.innerHTML=`<div style="margin-bottom:14px;font-size:0.82rem;color:var(--muted);font-weight:600">${matches.length} match${matches.length!==1?'es':''} found</div>`
+        + matches.map((m,i)=>`
+          <div class="match-card">
+            <div class="match-score">✨ Strong Match</div>
+            <div class="match-names">👤 ${m.clientName} → 🏡 ${m.listingAddress}</div>
+            <div class="match-reason">${m.matchReason}</div>
+            <button class="btn btn-gold" onclick="openEmail(${i})">📧 View &amp; Send Email</button>
+          </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div>Something went wrong. Please try again.</div>';
+  }
+  btn.disabled=false; btn.textContent='Find Matches Now';
+}
+
+function openEmail(i) {
+  const m = window._matches[i]; currentEmail=m;
+  document.getElementById('modal-to').textContent      = m.clientEmail ? `${m.clientName} <${m.clientEmail}>` : m.clientName+' (no email on file)';
+  document.getElementById('modal-subject').textContent = m.emailSubject;
+  document.getElementById('modal-body').textContent    = m.emailBody;
+  document.getElementById('email-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('email-modal').classList.remove('open'); }
+function openGmail() {
+  const to  = encodeURIComponent(currentEmail.clientEmail||'');
+  const sub = encodeURIComponent(currentEmail.emailSubject||'');
+  const bod = encodeURIComponent(currentEmail.emailBody||'');
+  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${sub}&body=${bod}`,'_blank');
+}
+function copyEmail() {
+  navigator.clipboard.writeText(`To: ${currentEmail.clientEmail||''}\nSubject: ${currentEmail.emailSubject||''}\n\n${currentEmail.emailBody||''}`)
+    .then(()=>toast('📋 Copied to clipboard!'))
+    .catch(()=>toast('Select text manually to copy.'));
+}
+
+/* ── CSV IMPORT ── */
+function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('csv-status');
+  status.textContent = 'Reading file…';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) { status.textContent = '⚠️ File looks empty or invalid.'; return; }
+
+    const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim().toLowerCase());
+    const col = (keywords) => headers.findIndex(h => keywords.some(k => h.includes(k)));
+
+    const firstCol = col(['first name','firstname','first']);
+    const lastCol  = col(['last name','lastname','last']);
+    const fullCol  = col(['full name','display name','name','contact']);
+    const phoneCol = col(['phone','mobile','cell','telephone','tel']);
+    const emailCol = col(['email','e-mail','mail']);
+
+    let imported = 0, skipped = 0;
+    const existingNames = new Set(clients.map(c => c.name.toLowerCase()));
+
+    for (let i = 1; i < lines.length; i++) {
+      const raw = lines[i];
+      if (!raw.trim()) continue;
+      // Simple CSV split handling quoted fields
+      const cols = [];
+      let cur = '', inQ = false;
+      for (let ch of raw) {
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      cols.push(cur.trim());
+
+      let name = '';
+      if (fullCol >= 0 && cols[fullCol]) {
+        name = cols[fullCol].replace(/"/g,'').trim();
+      } else if (firstCol >= 0 && cols[firstCol]) {
+        const first = (cols[firstCol]||'').replace(/"/g,'').trim();
+        const last  = lastCol >= 0 ? (cols[lastCol]||'').replace(/"/g,'').trim() : '';
+        name = (first + ' ' + last).trim();
+      }
+
+      if (!name || name.length < 2) { skipped++; continue; }
+      if (existingNames.has(name.toLowerCase())) { skipped++; continue; }
+
+      const phone = phoneCol >= 0 ? (cols[phoneCol]||'').replace(/"/g,'').trim() : '';
+      const email = emailCol >= 0 ? (cols[emailCol]||'').replace(/"/g,'').trim() : '';
+
+      clients.push({
+        id: Date.now() + i, name, phone, email,
+        intent:'Buy', proptype:'Any', minprice:'', maxprice:'',
+        beds:'Any', baths:'Any', areas:'',
+        notes:'Imported from contacts — update wish list.',
+        added: new Date().toLocaleDateString()
+      });
+      existingNames.add(name.toLowerCase());
+      imported++;
+    }
+
+    save(); renderClients();
+    if (imported > 0) {
+      status.innerHTML = `<span style="color:var(--green)">✅ ${imported} contact${imported!==1?'s':''} imported!</span>${skipped?' ('+skipped+' skipped)':''}`;
+      toast('✅ ' + imported + ' contacts imported!');
+    } else {
+      status.textContent = '⚠️ No new contacts found. Check the file format.';
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+updateStats();
+
+/* ── SHARE LISTING ── */
+function buildShareText(id) {
+  const l = listings.find(l=>String(l.id)===String(id)); if(!l) return '';
+  return `🏠 ${l.salerent==='Sale'?'FOR SALE':'FOR RENT'} — ${l.address}\n💰 ${l.price||'Price on Request'}\n🛏 ${l.beds} bed · 🚿 ${l.baths} bath · ${l.type}${l.attached&&l.attached!=='N/A (Apt/Condo)'?' · '+l.attached:''}\n📍 ${l.area||'Boro Park'}${l.zip?' '+l.zip:''}\n${l.features&&l.features.length?'✅ '+l.features.slice(0,5).join(', ')+'\n':''}${l.notes?'📝 '+l.notes+'\n':''}\n📞 Call/Text: 917-567-1780\n🌐 landerbuiltrealty.com`;
+}
+function shareWhatsApp(id) { window.open('https://wa.me/?text='+encodeURIComponent(buildShareText(id)),'_blank'); }
+function shareSMS(id) { window.open('sms:?body='+encodeURIComponent(buildShareText(id))); }
+
+/* ── COPY LISTING ── */
+function copyListing(id) {
+  const l = listings.find(l=>String(l.id)===String(id)); if(!l) return;
+  const text = `🏠 ${l.salerent==='Sale'?'FOR SALE':'FOR RENT'} — ${l.address}\n💰 ${l.price||'Price on Request'}\n🛏 ${l.beds} bed · 🚿 ${l.baths} bath · ${l.type}${l.attached&&l.attached!=='N/A (Apt/Condo)'?' · '+l.attached:''}\n📍 ${l.area||'Boro Park'}${l.zip?' '+l.zip:''}\n${l.features&&l.features.length?'✅ '+l.features.join(', ')+'\n':''}${l.notes?'📝 '+l.notes+'\n':''}📞 Call/Text: 917-567-1780\n🌐 landerbuiltrealty.com`;
+  navigator.clipboard.writeText(text).then(()=>toast('📋 Copied! Paste anywhere.')).catch(()=>toast('Long-press to copy manually.'));
+}
+
+/* ── REMINDERS ── */
+let currentReminderClientId = null;
+function openReminderModal(clientId) {
+  currentReminderClientId = clientId;
+  const c = clients.find(c=>c.id===clientId); if(!c) return;
+  document.getElementById('reminder-client-name').textContent = c.name;
+  document.getElementById('reminder-date').value = c.reminder?.date || new Date().toISOString().split('T')[0];
+  document.getElementById('reminder-type').value = c.reminder?.type || 'Call';
+  document.getElementById('reminder-note').value = c.reminder?.note || '';
+  document.getElementById('reminder-modal').classList.add('open');
+}
+function closeReminderModal() { document.getElementById('reminder-modal').classList.remove('open'); }
+function saveReminder() {
+  const c = clients.find(c=>c.id===currentReminderClientId); if(!c) return;
+  c.reminder = { date: document.getElementById('reminder-date').value, type: document.getElementById('reminder-type').value, note: document.getElementById('reminder-note').value.trim() };
+  save(); closeReminderModal(); renderClients(); renderReminders(); toast('🔔 Reminder set!');
+}
+function clearReminder() {
+  const c = clients.find(c=>c.id===currentReminderClientId); if(!c) return;
+  delete c.reminder; save(); closeReminderModal(); renderClients(); renderReminders(); toast('Reminder removed.');
+}
+function markDone(clientId) {
+  const c = clients.find(c=>c.id===clientId); if(!c) return;
+  if(!c.callLog) c.callLog=[];
+  c.callLog.unshift({ date: new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), text:`✅ Follow-up done: ${c.reminder?.type||''}${c.reminder?.note?' — '+c.reminder.note:''}` });
+  delete c.reminder; save(); renderReminders(); renderClients(); toast('✅ Marked as done!');
+}
+function renderReminders() {
+  const el = document.getElementById('reminders-list'); if(!el) return;
+  const today = new Date().toISOString().split('T')[0];
+  const withRem = clients.filter(c=>c.reminder&&c.reminder.date).sort((a,b)=>a.reminder.date.localeCompare(b.reminder.date));
+  if(!withRem.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">🔔</div>No follow-ups set yet.<br><small style="font-size:0.8rem">Go to a client card and tap "Set Follow-Up".</small></div>'; return; }
+  el.innerHTML = withRem.map(c=>{
+    const isPast=c.reminder.date<today, isToday=c.reminder.date===today;
+    return `<div class="reminder-card ${isPast?'overdue':isToday?'today':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div><div style="font-weight:700;font-size:1rem">${c.name}</div>
+        <div style="font-size:0.78rem;color:var(--muted)">${c.phone||''} ${c.email?'· '+c.email:''}</div></div>
+        <span style="font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;background:${isPast?'#fde8e8':isToday?'#dcfce7':'#f0f9ff'};color:${isPast?'var(--red)':isToday?'var(--green)':'#0369a1'}">${isPast?'⚠️ OVERDUE':isToday?'🔔 TODAY':c.reminder.date}</span>
+      </div>
+      <div style="font-size:0.84rem;font-weight:600;margin-bottom:4px">${c.reminder.type==='Call'?'📞':c.reminder.type==='Text'?'💬':c.reminder.type==='Email'?'📧':'🏠'} ${c.reminder.type}</div>
+      ${c.reminder.note?`<div style="font-size:0.8rem;color:var(--muted)">${c.reminder.note}</div>`:''}
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        ${c.phone?`<a href="tel:${c.phone.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.76rem;padding:7px 14px">📞 Call</a>`:''}
+        ${c.phone?`<a href="sms:${c.phone.replace(/\D/g,'')}" class="btn btn-navy" style="font-size:0.76rem;padding:7px 14px">💬 Text</a>`:''}
+        <button class="btn btn-gold" style="font-size:0.76rem;padding:7px 12px" onclick="openReminderModal(${c.id})">✏️ Edit</button>
+        <button class="btn btn-outline" style="font-size:0.76rem;padding:7px 12px" onclick="markDone(${c.id})">✅ Done</button>
+      </div>
+    </div>`;
+  }).join('');
+  // Update dashboard urgent reminders
+  const dashEl = document.getElementById('dashboard-reminders');
+  const statDue = document.getElementById('stat-due');
+  const urgent = withRem.filter(c=>c.reminder.date<=today);
+  if(statDue) statDue.textContent = urgent.length;
+  if(dashEl) {
+    if(urgent.length) {
+      dashEl.innerHTML=`<div class="card" style="border-left:4px solid var(--red);margin-bottom:14px;"><div class="card-name" style="margin-bottom:10px;color:var(--red)">🔔 ${urgent.length} Follow-Up${urgent.length!==1?'s':''} Due Today or Overdue</div>${urgent.slice(0,3).map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:0.88rem;font-weight:600">${c.name}</div><div style="font-size:0.75rem;color:var(--muted)">${c.reminder.type}${c.reminder.note?' — '+c.reminder.note:''}</div></div><div style="display:flex;gap:6px">${c.phone?`<a href="tel:${c.phone.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.7rem;padding:5px 10px">📞</a>`:''}</div></div>`).join('')}<button class="btn btn-outline btn-full" style="margin-top:12px;font-size:0.8rem" onclick="showPage('reminders')">View All →</button></div>`;
+    } else { dashEl.innerHTML=''; }
+  }
+}
+
+// Override showPage to load reminders
+const _origShowPage = showPage;
+showPage = function(id) {
+  _origShowPage(id);
+  if(id==='reminders') renderReminders();
+  if(id==='dashboard') renderReminders();
+};
+
+// Init reminders on load
+renderReminders();
+renderUpgrades();
+initLuach();
+renderMorningSummary();
+
+/* ── MORNING SUMMARY ── */
+function renderMorningSummary() {
+  const el = document.getElementById('morning-summary');
+  if(!el) return;
+
+  const today = new Date();
+  const todayStr = today.toLocaleDateString();
+  const hour = today.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  // Find overdue and today's follow-ups
+  const overdue = clients.filter(c => {
+    if(!c.reminder?.date) return false;
+    return new Date(c.reminder.date) < today && c.reminder.date !== todayStr;
+  });
+  const dueToday = clients.filter(c => c.reminder?.date === todayStr);
+  const dueSoon  = clients.filter(c => {
+    if(!c.reminder?.date) return false;
+    const d = new Date(c.reminder.date);
+    const diff = (d - today) / (1000*60*60*24);
+    return diff > 0 && diff <= 3;
+  });
+
+  // Find clients with no contact in 7+ days
+  const neglected = clients.filter(c => {
+    if(!c.callLog || !c.callLog.length) return true;
+    const lastCall = new Date(c.callLog[0].date);
+    return (today - lastCall) / (1000*60*60*24) > 7;
+  }).slice(0, 5);
+
+  el.innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--navy),#1a2a3a);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:4px;">${greeting} 👋</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:16px;">${today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:${overdue.length||dueToday.length?'16px':'0'}">
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:700;color:${overdue.length?'#f87171':'var(--gold)'};">${overdue.length}</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-top:2px;">Overdue</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:700;color:var(--gold);">${dueToday.length}</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-top:2px;">Due Today</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:700;color:var(--gold);">${dueSoon.length}</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-top:2px;">Due Soon</div>
+        </div>
+      </div>
+      ${overdue.length || dueToday.length ? `
+      <div style="margin-top:4px;">
+        ${overdue.map(c=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(248,113,113,0.12);border-radius:7px;margin-bottom:6px;border-left:3px solid #f87171;">
+            <div>
+              <div style="font-size:0.85rem;font-weight:600;color:white;">${c.name}</div>
+              <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);">⚠️ Overdue · ${c.reminder?.type||'Follow-up'}${c.reminder?.note?' — '+c.reminder.note:''}</div>
+            </div>
+            <a href="tel:${c.phone}" onclick="quickLogCall(${c.id},'Called')" style="background:var(--green);color:white;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:700;text-decoration:none;">📞 Call</a>
+          </div>`).join('')}
+        ${dueToday.map(c=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(201,168,76,0.12);border-radius:7px;margin-bottom:6px;border-left:3px solid var(--gold);">
+            <div>
+              <div style="font-size:0.85rem;font-weight:600;color:white;">${c.name}</div>
+              <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);">📅 Today · ${c.reminder?.type||'Follow-up'}${c.reminder?.note?' — '+c.reminder.note:''}</div>
+            </div>
+            <a href="tel:${c.phone}" onclick="quickLogCall(${c.id},'Called')" style="background:var(--gold);color:var(--navy);padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:700;text-decoration:none;">📞 Call</a>
+          </div>`).join('')}
+      </div>` : `<div style="font-size:0.82rem;color:rgba(255,255,255,0.4);text-align:center;padding:8px 0;">✅ You're all caught up!</div>`}
+    </div>
+    ${neglected.length ? `
+    <div style="background:var(--white);border-radius:12px;padding:14px 16px;border:1px solid var(--border);margin-bottom:16px;">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">👀 Haven't Spoken to in 7+ Days</div>
+      ${neglected.map(c=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--navy);">${c.name}</div>
+            <div style="font-size:0.72rem;color:var(--muted);">${c.callLog?.length ? 'Last: '+c.callLog[0].date : 'No contact logged'}</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <a href="tel:${c.phone}" style="background:var(--green);color:white;padding:5px 10px;border-radius:6px;font-size:0.72rem;font-weight:700;text-decoration:none;">📞</a>
+            <button onclick="quickLogCall(${c.id})" style="background:var(--cream);border:1px solid var(--border);color:var(--navy);padding:5px 10px;border-radius:6px;font-size:0.72rem;font-weight:600;cursor:pointer;">✏️ Log</button>
+          </div>
+        </div>`).join('')}
+    </div>` : ''}`;
+}
+
+/* ── QUICK CALL LOG ── */
+let qlClientId = null;
+let qlFollowUpDays = 0;
+
+function quickLogCall(id, autoNote) {
+  qlClientId = id;
+  qlFollowUpDays = 0;
+  const c = clients.find(c=>c.id===id);
+  if(!c) return;
+  document.getElementById('ql-client-name').textContent = c.name + (c.phone ? ' · ' + c.phone : '');
+  document.getElementById('ql-note').value = autoNote || '';
+  document.getElementById('ql-title').textContent = 'Log a Call — ' + c.name;
+  // Reset follow-up buttons
+  document.querySelectorAll('.fu-btn').forEach(b => { b.style.background='var(--cream)'; b.style.color='var(--navy)'; b.style.borderColor='var(--border)'; });
+  document.getElementById('fu-none-btn').style.background='var(--gold)';
+  document.getElementById('fu-none-btn').style.color='var(--navy)';
+  const modal = document.getElementById('quick-log-modal');
+  modal.style.display='flex';
+  setTimeout(()=>{ modal.style.opacity='1'; }, 10);
+}
+
+function setQuickNote(text) {
+  document.getElementById('ql-note').value = text;
+  // Highlight the selected button
+  document.querySelectorAll('.quick-note-btn').forEach(b => {
+    const isSelected = b.getAttribute('onclick').includes(text.replace(/'/g,"\\'"));
+    b.style.background = isSelected ? 'var(--navy)' : 'var(--cream)';
+    b.style.color = isSelected ? 'white' : 'var(--navy)';
+    b.style.borderColor = isSelected ? 'var(--navy)' : 'var(--border)';
+  });
+}
+
+function setFollowUp(days) {
+  qlFollowUpDays = days;
+  document.querySelectorAll('.fu-btn').forEach(b => { b.style.background='var(--cream)'; b.style.color='var(--navy)'; b.style.borderColor='var(--border)'; });
+  event.target.style.background='var(--gold)';
+  event.target.style.color='var(--navy)';
+  event.target.style.borderColor='var(--gold)';
+}
+
+function closeQuickLog() {
+  document.getElementById('quick-log-modal').style.display='none';
+}
+
+function saveQuickLog() {
+  const c = clients.find(c=>c.id===qlClientId);
+  if(!c) return;
+  const note = document.getElementById('ql-note').value.trim();
+  if(!note) { toast('⚠️ Please enter a note first.'); return; }
+  if(!c.callLog) c.callLog=[];
+  const timestamp = new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  c.callLog.unshift({ date: timestamp, text: note });
+  // Set follow-up if selected
+  if(qlFollowUpDays > 0) {
+    const fu = new Date();
+    fu.setDate(fu.getDate() + qlFollowUpDays);
+    c.reminder = { date: fu.toLocaleDateString(), type: 'Follow-up', note: note };
+  }
+  save();
+  closeQuickLog();
+  renderClients();
+  renderReminders();
+  renderMorningSummary();
+  toast('✅ Call logged' + (qlFollowUpDays>0?' · Follow-up set for '+qlFollowUpDays+' days':'') + '!');
+}
+
+/* ── REAL PHONE REMINDER (uses device calendar/alarm) ── */
+function schedulePhoneReminder(clientName, date, note) {
+  // Create a calendar link that opens iPhone Calendar
+  const title = encodeURIComponent('Call ' + clientName + ' — Lander Built Realty');
+  const details = encodeURIComponent(note || 'Follow-up call');
+  const dateStr = new Date(date).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  // iOS Calendar deep link
+  const calUrl = `webcal://p01-caldav.icloud.com/?method=PUBLISH&name=${title}`;
+  // Fallback: Google Calendar
+  const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dateStr}/${dateStr}`;
+  window.open(gCalUrl, '_blank');
+  toast('📅 Opening calendar to set reminder...');
+}
+
+
+
+function addUpgrade() {
+  const name = document.getElementById('u-name').value.trim();
+  if (!name) { toast('⚠️ Please enter a name.'); return; }
+  upgrades.unshift({
+    id: Date.now(), name,
+    phone:       document.getElementById('u-phone').value.trim(),
+    email:       document.getElementById('u-email').value.trim(),
+    scenario:    document.getElementById('u-scenario').value,
+    sell: {
+      address:   document.getElementById('u-sell-address').value.trim(),
+      type:      document.getElementById('u-sell-type').value,
+      price:     document.getElementById('u-sell-price').value.trim(),
+      beds:      document.getElementById('u-sell-beds').value,
+      area:      document.getElementById('u-sell-area').value.trim(),
+      status:    document.getElementById('u-sell-status').value,
+    },
+    buy: {
+      type:      document.getElementById('u-buy-type').value,
+      budget:    document.getElementById('u-buy-budget').value.trim(),
+      beds:      document.getElementById('u-buy-beds').value,
+      area:      document.getElementById('u-buy-area').value.trim(),
+      status:    document.getElementById('u-buy-status').value,
+    },
+    notes:       document.getElementById('u-notes').value.trim(),
+    added:       new Date().toLocaleDateString()
+  });
+  saveUpgrades();
+  ['u-name','u-phone','u-email','u-sell-address','u-sell-price','u-sell-area','u-buy-budget','u-buy-area','u-notes'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  renderUpgrades();
+  toast('✅ Upgrade client saved!');
+}
+
+function statusClass(s) {
+  if(!s) return 'status-waiting';
+  if(s==='Listed'||s==='Searching'||s==='Found Property') return 'status-listed';
+  if(s==='In Contract') return 'status-contract';
+  if(s==='Closed') return 'status-closed';
+  if(s==='Not Listed Yet') return 'status-waiting';
+  return 'status-waiting';
+}
+
+function cycleStatus(upId, side, current) {
+  const u = upgrades.find(u=>u.id===upId); if(!u) return;
+  const sellSteps = ['Not Listed Yet','Listed','In Contract','Closed'];
+  const buySteps  = ['Searching','Found Property','In Contract','Closed'];
+  const steps = side==='sell' ? sellSteps : buySteps;
+  const idx = steps.indexOf(current);
+  u[side].status = steps[(idx+1) % steps.length];
+  saveUpgrades(); renderUpgrades(); toast('Status updated!');
+}
+
+function deleteUpgrade(id) {
+  if(!confirm('Delete this upgrade client?')) return;
+  upgrades = upgrades.filter(u=>u.id!==id);
+  saveUpgrades(); renderUpgrades(); toast('Deleted.');
+}
+
+function renderUpgrades() {
+  const el = document.getElementById('upgrades-list'); if(!el) return;
+  document.getElementById('upgrade-count').textContent = upgrades.length + (upgrades.length===1?' client':' clients');
+  if(!upgrades.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">🔄</div>No upgrade clients yet.</div>'; return; }
+  el.innerHTML = upgrades.map(u => {
+    const scenarioColor = u.scenario==='Sell First'?'#b45309':u.scenario==='Buy First'?'#1e40af':'#166534';
+    const scenarioIcon  = u.scenario==='Sell First'?'🏡→🔑':u.scenario==='Buy First'?'🔑→🏡':'🔄';
+    return `<div class="upgrade-card">
+      <div class="upgrade-card-header">
+        <div>
+          <div class="upgrade-name">${u.name}</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${u.phone?'📞 '+u.phone:''} ${u.email?'· '+u.email:''}</div>
+        </div>
+        <span style="font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:20px;background:${scenarioColor}18;color:${scenarioColor};border:1px solid ${scenarioColor}44">${scenarioIcon} ${u.scenario}</span>
+      </div>
+      <div class="upgrade-sections">
+        <div class="upgrade-section selling">
+          <div class="upgrade-section-title">🏡 Selling</div>
+          <div class="upgrade-section-detail">${u.sell.address||'Address TBD'}</div>
+          <div class="upgrade-section-sub">${u.sell.beds} bed · ${u.sell.type}${u.sell.price?' · '+u.sell.price:''}</div>
+          <div class="upgrade-section-sub">${u.sell.area||''}</div>
+          <span class="status-pill ${statusClass(u.sell.status)}" onclick="cycleStatus(${u.id},'sell','${u.sell.status}')" title="Tap to update status">
+            ${u.sell.status||'Not Listed Yet'} ▸
+          </span>
+        </div>
+        <div class="upgrade-section buying">
+          <div class="upgrade-section-title">🔑 Buying</div>
+          <div class="upgrade-section-detail">${u.buy.budget||'Budget TBD'}</div>
+          <div class="upgrade-section-sub">${u.buy.beds}+ bed · ${u.buy.type}</div>
+          <div class="upgrade-section-sub">${u.buy.area||''}</div>
+          <span class="status-pill ${statusClass(u.buy.status)}" onclick="cycleStatus(${u.id},'buy','${u.buy.status}')" title="Tap to update status">
+            ${u.buy.status||'Searching'} ▸
+          </span>
+        </div>
+      </div>
+      ${u.notes?`<div style="font-size:0.8rem;color:var(--muted);margin-bottom:10px">📝 ${u.notes}</div>`:''}
+      <div style="font-size:0.7rem;color:var(--muted);margin-bottom:10px">Added ${u.added}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${u.phone?`<a href="tel:${u.phone.replace(/\D/g,'')}" class="btn btn-outline" style="font-size:0.76rem;padding:7px 12px">📞 Call</a>`:''}
+        ${u.phone?`<a href="sms:${u.phone.replace(/\D/g,'')}" class="btn btn-outline" style="font-size:0.76rem;padding:7px 12px">💬 Text</a>`:''}
+        <button class="btn btn-del" onclick="deleteUpgrade(${u.id})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── AI CHAIN MATCHING ── */
+async function runChainMatch() {
+  if(upgrades.length < 2) { toast('⚠️ Need at least 2 upgrade clients to find chain deals.'); return; }
+  const btn = document.getElementById('chain-btn');
+  btn.disabled=true; btn.textContent='Finding chains…';
+  const res = document.getElementById('chain-results');
+  res.innerHTML='<div class="ai-loading"><div class="spinner"></div>AI is looking for chain deal opportunities…</div>';
+
+  const prompt = `You are a real estate assistant for Lander Built Realty in Boro Park, Brooklyn. The broker's email is YN@LanderBuiltRealty.com.
+
+Here are clients who want to UPGRADE (each is both selling their current home AND buying a bigger one):
+
+${upgrades.map((u,i)=>`CLIENT ${i+1}: Name: ${u.name} | Scenario: ${u.scenario} | SELLING: ${u.sell.address||'?'} (${u.sell.beds}br ${u.sell.type}, asking ${u.sell.price||'?'}, near ${u.sell.area||'?'}, status: ${u.sell.status}) | BUYING: wants ${u.buy.beds}br ${u.buy.type}, budget ${u.buy.budget||'?'}, near ${u.buy.area||'?'}, status: ${u.buy.status} | Notes: ${u.notes||'none'} | Phone: ${u.phone||'none'} | Email: ${u.email||'none'}`).join('\n')}
+
+Your job is to find CHAIN DEALS — where one client's home for sale could be bought by another client, creating a coordinated chain. For example: Client A is selling a 4br house that matches what Client B wants to buy. Client B is selling a 3br apartment that matches what Client C wants.
+
+Return a JSON array only — no markdown. Each object must have:
+- chainTitle (short title like "3-Person Chain Deal")
+- people (array of objects with: name, role (e.g. "Sells 4br to → Moshe"), email)
+- summary (2-3 sentences explaining the chain and why it works)
+- emailSubject (subject line for group intro email)
+- emailBody (warm professional email from the broker to all parties explaining the chain opportunity and next steps. Sign off: "Warm regards,\\nLander Built Realty\\nYN@LanderBuiltRealty.com\\n917-567-1780")`;
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await r.json();
+    const text = data.content.map(b=>b.text||'').join('');
+    const chains = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    if(!chains.length) {
+      res.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>No chain deals found yet. Add more upgrade clients and try again.</div>';
+    } else {
+      window._chains = chains;
+      res.innerHTML = chains.map((c,i)=>`
+        <div class="chain-card">
+          <div class="chain-title">🔗 ${c.chainTitle}</div>
+          ${(c.people||[]).map((p,pi)=>`
+            <div class="chain-person"><strong>${p.name}</strong> — ${p.role}</div>
+            ${pi < (c.people.length-1) ? '<div class="chain-arrow">↓</div>' : ''}
+          `).join('')}
+          <div style="font-size:0.82rem;color:#555;margin:10px 0;line-height:1.6;">${c.summary}</div>
+          <button class="btn btn-gold" onclick="openChainEmail(${i})">📧 View Introduction Email</button>
+        </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div>Something went wrong. Please try again.</div>';
+  }
+  btn.disabled=false; btn.textContent='🔗 Find Chain Deals Now';
+}
+
+function openChainEmail(i) {
+  const c = window._chains[i];
+  const emails = (c.people||[]).map(p=>p.email).filter(Boolean).join(',');
+  currentEmail = { clientEmail: emails, emailSubject: c.emailSubject, emailBody: c.emailBody };
+  document.getElementById('modal-to').textContent = (c.people||[]).map(p=>p.name).join(', ');
+  document.getElementById('modal-subject').textContent = c.emailSubject;
+  document.getElementById('modal-body').textContent = c.emailBody;
+  document.getElementById('email-modal').classList.add('open');
+}
+
+/* ── DAILY LUACH AUTO-SCANNER ── */
+
+// Daily Luach PDF links — fetched from dailyluach.com
+// These update weekly; format is consistent
+const LUACH_DAYS = {
+  0: { name: 'Sunday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/sunday.pdf' },
+  1: { name: 'Monday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-10.pdf' },
+  2: { name: 'Tuesday',   pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-11.pdf' },
+  3: { name: 'Wednesday', pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-12.pdf' },
+  4: { name: 'Thursday',  pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/Thursday.pdf' },
+  5: { name: 'Shabbos',   pdf: null },
+  6: { name: 'Sunday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/sunday.pdf' },
+};
+
+async function scanKolBerama() {
+  const btn = document.getElementById('kolberama-scan-btn');
+  const res = document.getElementById('scan-results');
+  if(btn) { btn.disabled=true; btn.textContent='Scanning Kol Berama…'; }
+  res.innerHTML = `<div class="ai-loading"><div class="spinner"></div>
+    Reading Kol Berama today.pdf…<br>
+    <small style="color:var(--muted)">Finding real estate ads and matching to your clients — takes about 20 seconds</small>
+  </div>`;
+
+  const clientSummary = clients.map((c,i) =>
+    `CLIENT ${i+1}: ${c.name} | ${c.intent} | ${c.proptype||'Any'} | Budget ${c.minprice||'?'}–${c.maxprice||'?'}${c.maxIncomePrice?' | Income budget up to '+c.maxIncomePrice:''} | Beds:${c.beds||'Any'} | Area:${c.areas||'Boro Park'} | Phone:${c.phone||''} | Email:${c.email||''}`
+  ).join('\n');
+
+  const listingSummary = listings.map((l,i) =>
+    `LISTING ${i+1}: ${l.address} | ${l.salerent} | ${l.beds} bed ${l.type} | ${l.price||'?'} | ${l.area||'Boro Park'}`
+  ).join('\n');
+
+  const prompt = `You are a real estate assistant for Lander Built Realty. The broker is Joe Nadler, licensed throughout New York State — specializing in Boro Park Brooklyn residential, but also handling upstate NY, summer homes, lake properties, Monroe/Orange County, apartments for rent, and offices for rent.
+
+Please fetch and read ALL real estate classified ads from this Kol Berama PDF: https://kolberamamedia.com/today.pdf
+
+Look for ALL types of real estate ads including:
+- Homes for sale (Boro Park, Brooklyn, upstate NY, Monroe, Orange County, Catskills, Hudson Valley)
+- Apartments for rent (Boro Park and surrounding areas)
+- Offices for rent (Boro Park commercial)
+- Summer homes, lake houses, vacation rentals
+- Buyers looking for properties
+- Any real estate related classifieds
+
+MY CLIENTS (buyers/renters):
+${clientSummary || 'No clients saved yet.'}
+
+MY LISTINGS (for sale/rent):
+${listingSummary || 'No listings saved yet.'}
+
+YOUR JOB:
+1. Read EVERY real estate ad in the PDF regardless of type
+2. Match ads against my clients and listings
+3. Flag ANY upstate/summer home/lake property ads — these are always opportunities
+4. Flag ANY office or commercial rental ads — potential leads
+5. For each match, note the contact info — this is who to call for a co-brokering deal
+
+Return a JSON array only — no markdown. Each object must have:
+- matchType: "listing_for_client" | "buyer_for_listing" | "rental_opportunity" | "office_opportunity" | "upstate_opportunity" | "general_opportunity"
+- adSummary: exactly what the ad says — address, price, details
+- matchedWith: which client or listing this matches, or "General opportunity" if no specific match
+- matchReason: 1-2 sentences — why this is worth pursuing
+- contactInfo: phone or name from the ad — who to call
+- adType: "sale" | "rent" | "office" | "upstate" | "summer_home" | "buyer_seeking"
+- urgency: "high" | "medium" | "low"
+- source: "Kol Berama"
+
+Return [] if no real estate ads found.`;
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        tools:[{ type:'web_search_20250305', name:'web_search' }],
+        messages:[{ role:'user', content:prompt }]
+      })
+    });
+    const data = await r.json();
+    const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const matches = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    if(!matches.length) {
+      res.innerHTML = `<div class="empty-state"><div class="empty-icon">📻</div>
+        No matches found in today's Kol Berama.<br>
+        <small style="font-size:0.8rem;color:var(--muted)">Either no real estate ads today, or nothing matched your current clients.</small>
+      </div>`;
+    } else {
+      res.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.95rem;font-weight:700;color:var(--navy)">${matches.length} match${matches.length!==1?'es':''} found in Kol Berama! 🎯</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">Call these contacts to arrange a co-brokering deal</div>
+        </div>` +
+        matches.map(m => `
+          <div class="card" style="border-left:4px solid #4f4f9f">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div class="card-name" style="font-size:0.82rem;">
+                ${m.matchType==='listing_for_client'?'🏠 Property for your client':
+                m.matchType==='buyer_for_listing'?'👤 Buyer for your listing':
+                m.matchType==='rental_opportunity'?'🔑 Rental opportunity':
+                m.matchType==='office_opportunity'?'🏢 Office/commercial lead':
+                m.matchType==='upstate_opportunity'?'🏔️ Upstate NY opportunity':
+                '💡 General opportunity'}
+              </div>
+              <span style="font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:20px;background:#e0e7ff;color:#3730a3;">📻 Kol Berama</span>
+            </div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:4px;">📋 ${m.adSummary}</div>
+            ${m.matchedWith?`<div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">↔️ Matches: <strong style="color:var(--navy)">${m.matchedWith}</strong></div>`:''}
+            <div style="font-size:0.82rem;color:#555;margin-bottom:10px;line-height:1.55;">${m.matchReason}</div>
+            ${m.contactInfo?`<div style="background:#eef0ff;border:1px solid #4f4f9f;border-radius:6px;padding:8px 12px;margin-bottom:10px;">
+              <div style="font-size:0.68rem;font-weight:700;color:#4f4f9f;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px;">📞 Contact to make a co-broker deal:</div>
+              <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">${m.contactInfo}</div>
+            </div>`:''}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${m.contactInfo&&m.contactInfo.match(/\d[\d\s\-\(\)]{8,}/)?
+                `<a href="tel:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.76rem;padding:7px 14px">📞 Call Now</a>
+                 <a href="sms:${m.contactInfo.replace(/\D/g,'')}&body=${encodeURIComponent('Hi, I saw your ad in Kol Berama. I have a client that might be interested — can we talk about a co-broker arrangement?')}" class="btn btn-navy" style="font-size:0.76rem;padding:7px 14px">💬 Text</a>
+                 <a href="https://wa.me/${m.contactInfo.replace(/\D/g,'')}" target="_blank" class="btn" style="font-size:0.76rem;padding:7px 14px;background:#25d366;color:white;border-radius:6px;">WhatsApp</a>`:''}
+            </div>
+          </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>
+      Could not read Kol Berama PDF. It may not be posted yet, or there was a connection issue. Try again shortly.
+    </div>`;
+    console.error(e);
+  }
+  if(btn) { btn.disabled=false; btn.textContent='📻 Scan Kol Berama Again'; }
+}
+
+async function scanHeimiSh() {
+  const btn = document.getElementById('heimish-scan-btn');
+  const res = document.getElementById('scan-results');
+  if(btn) { btn.disabled=true; btn.textContent='Scanning HeimiShAgent…'; }
+  res.innerHTML = `<div class="ai-loading"><div class="spinner"></div>
+    Scanning HeimiShAgent.com for listings…<br>
+    <small style="color:var(--muted)">Matching against your clients — takes about 20 seconds</small>
+  </div>`;
+
+  const clientSummary = clients.map((c,i) =>
+    `CLIENT ${i+1}: ${c.name} | ${c.intent} | ${c.proptype||'Any'} | Budget ${c.minprice||'?'}–${c.maxprice||'?'}${c.maxIncomePrice?' | Income budget up to '+c.maxIncomePrice:''} | Beds:${c.beds||'Any'} | Area:${c.areas||'Boro Park'} | Phone:${c.phone||''} | Email:${c.email||''}`
+  ).join('\n');
+
+  const listingSummary = listings.map((l,i) =>
+    `LISTING ${i+1}: ${l.address} | ${l.salerent} | ${l.beds} bed ${l.type} | ${l.price||'?'} | ${l.area||'Boro Park'}`
+  ).join('\n');
+
+  const prompt = `You are a real estate assistant for Lander Built Realty (broker: Joe Nadler, Boro Park Brooklyn).
+
+Please search the web and find ALL current real estate listings on HeimiShAgent.com — a heimish/frum-oriented real estate site serving Brooklyn and surrounding areas.
+
+MY CLIENTS (buyers/renters):
+${clientSummary || 'No clients saved yet.'}
+
+MY LISTINGS (for sale/rent):
+${listingSummary || 'No listings saved yet.'}
+
+YOUR JOB:
+1. Fetch and read listings from https://www.heimishagent.com and https://heimishagent.com/listings
+2. Match any listings against my clients' criteria
+3. Match any buyers/renters on the site against my listings
+4. Note any upstate, summer home, or office leads too
+
+Return a JSON array only — no markdown. Each object must have:
+- matchType: "listing_for_client" | "buyer_for_listing" | "rental_opportunity" | "office_opportunity" | "upstate_opportunity" | "general_opportunity"
+- adSummary: property address, price, details from the site
+- matchedWith: which client or listing this matches, or "General opportunity"
+- matchReason: 1-2 sentences why this is a good match
+- contactInfo: phone or agent name from the listing if visible
+- urgency: "high" | "medium" | "low"
+- source: "HeimiShAgent"
+
+Return [] if no matches found.`;
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        tools:[{ type:'web_search_20250305', name:'web_search' }],
+        messages:[{ role:'user', content:prompt }]
+      })
+    });
+    const data = await r.json();
+    const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const matches = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    if(!matches.length) {
+      res.innerHTML = `<div class="empty-state"><div class="empty-icon">🏘️</div>
+        No matches found on HeimiShAgent today.<br>
+        <small style="font-size:0.8rem;color:var(--muted)">Try again later or add more clients to match against.</small>
+      </div>`;
+    } else {
+      res.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.95rem;font-weight:700;color:var(--navy)">${matches.length} match${matches.length!==1?'es':''} found on HeimiShAgent! 🎯</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">Source: HeimiShAgent.com</div>
+        </div>` +
+        matches.map(m => `
+          <div class="card" style="border-left:4px solid #2d6a4f">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div class="card-name" style="font-size:0.82rem;">
+                ${m.matchType==='listing_for_client'?'🏠 Property for your client':
+                m.matchType==='buyer_for_listing'?'👤 Buyer for your listing':
+                m.matchType==='rental_opportunity'?'🔑 Rental opportunity':
+                m.matchType==='office_opportunity'?'🏢 Office/commercial lead':
+                m.matchType==='upstate_opportunity'?'🏔️ Upstate NY opportunity':
+                '💡 General opportunity'}
+              </div>
+              <span style="font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:20px;background:#dcfce7;color:#166534;">🟢 HeimiSh</span>
+            </div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:4px;">📋 ${m.adSummary}</div>
+            ${m.matchedWith?`<div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">↔️ Matches: <strong style="color:var(--navy)">${m.matchedWith}</strong></div>`:''}
+            <div style="font-size:0.82rem;color:#555;margin-bottom:10px;line-height:1.55;">${m.matchReason}</div>
+            ${m.contactInfo?`<div style="background:#f0faf4;border:1px solid #2d6a4f;border-radius:6px;padding:8px 12px;margin-bottom:10px;">
+              <div style="font-size:0.68rem;font-weight:700;color:#2d6a4f;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px;">📞 Contact:</div>
+              <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">${m.contactInfo}</div>
+            </div>`:''}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${m.contactInfo&&m.contactInfo.match(/\d[\d\s\-\(\)]{8,}/)?
+                `<a href="tel:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.76rem;padding:7px 14px">📞 Call Now</a>
+                 <a href="sms:${m.contactInfo.replace(/\D/g,'')}&body=${encodeURIComponent('Hi, I saw your listing on HeimiShAgent. I have a client that might be interested — can we arrange a co-broker deal?')}" class="btn btn-navy" style="font-size:0.76rem;padding:7px 14px">💬 Text</a>
+                 <a href="https://wa.me/${m.contactInfo.replace(/\D/g,'')}" target="_blank" class="btn" style="font-size:0.76rem;padding:7px 14px;background:#25d366;color:white;border-radius:6px;">WhatsApp</a>`:''}
+            </div>
+          </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>
+      Could not scan HeimiShAgent. Check your connection and try again.
+    </div>`;
+    console.error(e);
+  }
+  if(btn) { btn.disabled=false; btn.textContent='🏘️ Scan HeimiShAgent Again'; }
+}
+
+async function scanBoth() {
+  const btn = document.getElementById('scan-both-btn');
+  const res = document.getElementById('scan-results');
+  if(btn) { btn.disabled=true; btn.textContent='Scanning both sources…'; }
+
+  // Run both scans in parallel
+  const day = new Date().getDay();
+  const today = LUACH_DAYS[day];
+
+  const clientSummary = clients.map((c,i) =>
+    `CLIENT ${i+1}: ${c.name} | ${c.intent} | ${c.proptype||'Any'} | Budget ${c.minprice||'?'}–${c.maxprice||'?'}${c.maxIncomePrice?' | Income budget up to '+c.maxIncomePrice:''} | Beds:${c.beds||'Any'} | Area:${c.areas||'Boro Park'} | Phone:${c.phone||''} | Email:${c.email||''}`
+  ).join('\n');
+  const listingSummary = listings.map((l,i) =>
+    `LISTING ${i+1}: ${l.address} | ${l.salerent} | ${l.beds} bed ${l.type} | ${l.price||'?'} | ${l.area||'Boro Park'}`
+  ).join('\n');
+
+  res.innerHTML = `<div class="ai-loading"><div class="spinner"></div>
+    ⚡ Scanning Luach Hatzibur ${today?'('+today.name+')':'(no issue today)'} + HeimiShAgent + Kol Berama simultaneously…<br>
+    <small style="color:var(--muted)">This takes about 20–30 seconds</small>
+  </div>`;
+
+  const makePrompt = (source, url) => `You are a real estate assistant for Lander Built Realty (broker: Joe Nadler, Boro Park Brooklyn).
+
+Please fetch and read ALL real estate ads/listings from: ${url}
+
+MY CLIENTS: ${clientSummary || 'None saved.'}
+MY LISTINGS: ${listingSummary || 'None saved.'}
+
+Return a JSON array only. Each object: matchType, adSummary, matchedWith, matchReason, contactInfo, urgency, source:"${source}". Return [] if none.`;
+
+  const calls = [];
+  if(today && today.pdf) {
+    calls.push(fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000,
+        tools:[{ type:'web_search_20250305', name:'web_search' }],
+        messages:[{ role:'user', content:makePrompt('Luach Hatzibur ('+today.name+')', today.pdf) }]
+      })
+    }).then(r=>r.json()));
+  }
+  calls.push(fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000,
+      tools:[{ type:'web_search_20250305', name:'web_search' }],
+      messages:[{ role:'user', content:makePrompt('HeimiShAgent', 'https://www.heimishagent.com') }]
+    })
+  }).then(r=>r.json()));
+  calls.push(fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000,
+      tools:[{ type:'web_search_20250305', name:'web_search' }],
+      messages:[{ role:'user', content:makePrompt('Kol Berama', 'https://kolberamamedia.com/today.pdf') }]
+    })
+  }).then(r=>r.json()));
+
+  try {
+    const results = await Promise.all(calls);
+    let allMatches = [];
+    for(const data of results) {
+      const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+      try { allMatches = allMatches.concat(JSON.parse(text.replace(/```json|```/g,'').trim())); } catch(e) {}
+    }
+    allMatches.sort((a,b) => (b.urgency==='high'?2:b.urgency==='medium'?1:0)-(a.urgency==='high'?2:a.urgency==='medium'?1:0));
+
+    if(!allMatches.length) {
+      res.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>No matches found in either source today.<br><small style="color:var(--muted)">Try again tomorrow!</small></div>`;
+    } else {
+      res.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.95rem;font-weight:700;color:var(--navy)">${allMatches.length} total match${allMatches.length!==1?'es':''} — Luach + HeimiShAgent + Kol Berama ⚡</div>
+        </div>` +
+        allMatches.map(m => `
+          <div class="card" style="border-left:4px solid ${m.source&&m.source.includes('Luach')?'var(--gold)':'#2d6a4f'}">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div class="card-name" style="font-size:0.82rem;">${m.matchType==='listing_for_client'?'🏠 For your client':m.matchType==='buyer_for_listing'?'👤 Buyer for listing':m.matchType==='rental_opportunity'?'🔑 Rental':'💡 Opportunity'}</div>
+              <span style="font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:20px;background:${m.source&&m.source.includes('Luach')?'#fef3c7':'#dcfce7'};color:${m.source&&m.source.includes('Luach')?'#92400e':'#166534'};">${m.source||'Unknown'}</span>
+            </div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:4px;">📋 ${m.adSummary}</div>
+            ${m.matchedWith?`<div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">↔️ ${m.matchedWith}</div>`:''}
+            <div style="font-size:0.82rem;color:#555;margin-bottom:10px;">${m.matchReason}</div>
+            ${m.contactInfo?`<div style="font-size:0.82rem;font-weight:600;color:var(--navy);margin-bottom:8px;">📞 ${m.contactInfo}</div>`:''}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${m.contactInfo&&m.contactInfo.match(/\d[\d\s\-\(\)]{8,}/)?
+                `<a href="tel:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.76rem;padding:7px 14px">📞 Call</a>
+                 <a href="sms:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-navy" style="font-size:0.76rem;padding:7px 14px">💬 Text</a>
+                 <a href="https://wa.me/${m.contactInfo.replace(/\D/g,'')}" target="_blank" class="btn" style="font-size:0.76rem;padding:7px 14px;background:#25d366;color:white;border-radius:6px;">WhatsApp</a>`:''}
+            </div>
+          </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>Scan failed. Check your connection and try again.</div>`;
+    console.error(e);
+  }
+  if(btn) { btn.disabled=false; btn.textContent='⚡ Scan Both at Once — Luach + HeimiShAgent'; }
+}
+
+function initLuach() {
+  const day = new Date().getDay(); // 0=Sun, 1=Mon ... 6=Sat
+  const today = LUACH_DAYS[day];
+  const label = document.getElementById('luach-day-label');
+  const btn   = document.getElementById('luach-scan-btn');
+
+  if(today && today.pdf) {
+    if(label) label.textContent = today.name + ' · ' + new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+    if(btn) btn.textContent = '🔍 Scan ' + today.name + "'s Luach Now";
+  } else {
+    if(label) label.textContent = 'No issue today (Shabbos)';
+    if(btn) { btn.textContent = '🕍 No Issue Today (Shabbos)'; btn.disabled = true; btn.style.opacity='0.5'; }
+  }
+
+  // Build day buttons
+  const container = document.getElementById('day-buttons');
+  if(container) {
+    const days = [
+      { d:0, n:'Sun' }, { d:1, n:'Mon' }, { d:2, n:'Tue' },
+      { d:3, n:'Wed' }, { d:4, n:'Thu' }, { d:4, n:'Fri' }
+    ];
+    // Actually use the LUACH_DAYS object
+    Object.entries(LUACH_DAYS).filter(([d,v]) => v.pdf).forEach(([d,v]) => {
+      if(container.children.length >= 6) return;
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-navy';
+      btn.style.cssText = 'font-size:0.75rem;padding:8px 4px;';
+      btn.textContent = v.name;
+      btn.onclick = () => scanLuachDay(v.pdf, v.name);
+      container.appendChild(btn);
+    });
+  }
+}
+
+async function scanLuach() {
+  const day = new Date().getDay();
+  const today = LUACH_DAYS[day];
+  if(!today || !today.pdf) { toast('No Luach today — it\'s Shabbos! 🕍'); return; }
+  await scanLuachDay(today.pdf, today.name);
+}
+
+async function scanLuachDay(pdfUrl, dayName) {
+  const btn  = document.getElementById('luach-scan-btn');
+  const res  = document.getElementById('scan-results');
+  if(btn) { btn.disabled=true; btn.textContent='Scanning '+dayName+' Luach…'; }
+  res.innerHTML = `<div class="ai-loading"><div class="spinner"></div>
+    Reading ${dayName}'s Luach Hatzibur PDF…<br>
+    <small style="color:var(--muted)">Finding real estate ads and matching to your clients — this takes about 20 seconds</small>
+  </div>`;
+
+  const clientSummary = clients.map((c,i) =>
+    `CLIENT ${i+1}: ${c.name} | ${c.intent} | ${c.proptype||'Any'} | Budget ${c.minprice||'?'}–${c.maxprice||'?'}${c.maxIncomePrice?' | Income budget up to '+c.maxIncomePrice:''} | Beds:${c.beds||'Any'} | Area:${c.areas||'Boro Park'} | Phone:${c.phone||''} | Email:${c.email||''}`
+  ).join('\n');
+
+  const listingSummary = listings.map((l,i) =>
+    `LISTING ${i+1}: ${l.address} | ${l.salerent} | ${l.beds} bed ${l.type} | ${l.price||'?'} | ${l.area||'Boro Park'}`
+  ).join('\n');
+
+  const prompt = `You are a real estate assistant for Lander Built Realty. The broker is Joe Nadler, licensed throughout New York State — specializing in Boro Park Brooklyn residential, but also handling upstate NY, summer homes, lake properties, Monroe/Orange County, apartments for rent, and offices for rent.
+
+Please fetch and read ALL real estate classified ads from this Daily Luach Hatzibur PDF: ${pdfUrl}
+
+Look for ALL types of real estate ads including:
+- Homes for sale (Boro Park, Brooklyn, upstate NY, Monroe, Orange County, Catskills, Hudson Valley)
+- Apartments for rent (Boro Park and surrounding areas)
+- Offices for rent (Boro Park commercial)
+- Summer homes, lake houses, vacation rentals
+- Buyers looking for properties
+- Any real estate related classifieds
+
+MY CLIENTS (buyers/renters):
+${clientSummary || 'No clients saved yet.'}
+
+MY LISTINGS (for sale/rent):
+${listingSummary || 'No listings saved yet.'}
+
+YOUR JOB:
+1. Read EVERY real estate ad in the PDF regardless of type
+2. Match ads against my clients and listings
+3. Flag ANY upstate/summer home/lake property ads — these are always opportunities
+4. Flag ANY office or commercial rental ads — potential leads
+5. For each match, note the contact info — this is who to call for a co-brokering deal
+
+Return a JSON array only — no markdown. Each object must have:
+- matchType: "listing_for_client" | "buyer_for_listing" | "rental_opportunity" | "office_opportunity" | "upstate_opportunity" | "general_opportunity"
+- adSummary: exactly what the ad says — address, price, details
+- matchedWith: which client or listing this matches, or "General opportunity" if no specific match
+- matchReason: 1-2 sentences — why this is worth pursuing
+- contactInfo: phone or name from the ad — who to call
+- adType: "sale" | "rent" | "office" | "upstate" | "summer_home" | "buyer_seeking"
+- pageOrSection: where in the publication if visible
+- urgency: "high" | "medium" | "low"
+
+Return [] if no real estate ads found.`;
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        tools:[{ type:'web_search_20250305', name:'web_search' }],
+        messages:[{ role:'user', content:prompt }]
+      })
+    });
+    const data = await r.json();
+    const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const matches = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    if(!matches.length) {
+      res.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>
+        No matches found in today's Luach.<br>
+        <small style="font-size:0.8rem;color:var(--muted)">Either no real estate ads today, or nothing matched your current clients. Try again tomorrow!</small>
+      </div>`;
+    } else {
+      res.innerHTML = `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.95rem;font-weight:700;color:var(--navy)">${matches.length} match${matches.length!==1?'es':''} found in ${dayName}'s Luach! 🎯</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">Call these contacts to arrange a co-brokering deal and earn your commission</div>
+        </div>` +
+        matches.map(m => `
+          <div class="card" style="border-left:4px solid ${m.urgency==='high'?'var(--green)':m.urgency==='medium'?'var(--gold)':'var(--border)'}">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div class="card-name" style="font-size:0.82rem;">
+                ${m.matchType==='listing_for_client'?'🏠 Property for your client':
+                m.matchType==='buyer_for_listing'?'👤 Buyer for your listing':
+                m.matchType==='rental_opportunity'?'🔑 Rental opportunity':
+                m.matchType==='office_opportunity'?'🏢 Office/commercial lead':
+                m.matchType==='upstate_opportunity'?'🏔️ Upstate NY opportunity':
+                '💡 General opportunity'}
+              </div>
+              <span style="font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;background:${m.urgency==='high'?'#dcfce7':m.urgency==='medium'?'#fef3c7':'#f3f4f6'};color:${m.urgency==='high'?'#166534':m.urgency==='medium'?'#92400e':'#6b7280'}">${m.urgency}</span>
+            </div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:4px;">📋 ${m.adSummary}</div>
+            ${m.matchedWith?`<div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">↔️ Matches: <strong style="color:var(--navy)">${m.matchedWith}</strong></div>`:''}
+            ${m.pageOrSection?`<div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px;">📄 ${m.pageOrSection}</div>`:''}
+            <div style="font-size:0.82rem;color:#555;margin-bottom:10px;line-height:1.55;">${m.matchReason}</div>
+            ${m.contactInfo?`<div style="background:#fef9ee;border:1px solid var(--gold);border-radius:6px;padding:8px 12px;margin-bottom:10px;">
+              <div style="font-size:0.68rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px;">📞 Contact to make a co-broker deal:</div>
+              <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">${m.contactInfo}</div>
+            </div>`:''}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${m.contactInfo&&m.contactInfo.match(/\d[\d\s\-\(\)]{8,}/)?
+                `<a href="tel:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.76rem;padding:7px 14px">📞 Call Now</a>
+                 <a href="sms:${m.contactInfo.replace(/\D/g,'')}&body=${encodeURIComponent('Hi, I saw your ad in the Luach Hatzibur. I have a client that might be interested — can we talk about a co-broker arrangement?')}" class="btn btn-navy" style="font-size:0.76rem;padding:7px 14px">💬 Text</a>
+                 <a href="https://wa.me/${m.contactInfo.replace(/\D/g,'')}" target="_blank" class="btn" style="font-size:0.76rem;padding:7px 14px;background:#25d366;color:white;border-radius:6px;">WhatsApp</a>`:''}
+            </div>
+          </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>
+      Could not read the PDF. The Luach may not be posted yet, or there was a connection issue. Try again in a few minutes.
+    </div>`;
+    console.error(e);
+  }
+
+  if(btn) { btn.disabled=false; btn.textContent='🔍 Scan Today\'s Luach Again'; }
+}
+
+
+
+/* ═══════════════════════════════════════════
+   WEBSITE JS (injected)
+═══════════════════════════════════════════ */
+
+const BROKER_PHONE = '9175671780';
+const BROKER_EMAIL = 'YN@LanderBuiltRealty.com';
+
+// ── MOBILE MENU ──
+function toggleMenu(){
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',()=>document.getElementById('mobile-menu').classList.remove('open'));
+});
+
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── LOAD MY LISTINGS FROM CRM ──
+function getMyListings(){
+  try{ return JSON.parse(localStorage.getItem('lbr_listings')||'[]'); }
+  catch(e){ return []; }
+}
+
+// ── LISTING CARD HTML ──
+function listingCardHTML(l, isMyListing){
+  const photo = l.photos&&l.photos.length ? `<img src="${l.photos[0]}" alt="${l.address}"/>` : `<div class="listing-img-placeholder">🏠</div>`;
+  const badge = l.salerent==='Rent'?'badge-rent':'badge-sale';
+  const label = l.salerent==='Rent'?'For Rent':'For Sale';
+  const source = isMyListing
+    ? `<span class="result-source my-listing-badge">Our Listing</span>`
+    : `<span class="result-source mls-badge">MLS</span>`;
+  return `<div class="listing-card fade-up">
+    <div class="listing-img">
+      ${photo}
+      <div class="listing-badge ${badge}">${label}</div>
+    </div>
+    <div class="listing-body">
+      <div class="listing-price">${l.price||'Price on Request'} ${source}</div>
+      <div class="listing-address">${l.address}</div>
+      <div class="listing-area">📍 ${l.area||'Boro Park'}${l.zip?' · '+l.zip:''}</div>
+      ${l.features&&l.features.length?`<div style="font-size:0.75rem;color:var(--gray);margin-bottom:8px">${l.features.slice(0,3).join(' · ')}</div>`:''}
+      <div class="listing-specs">
+        <span>🛏 ${l.beds}</span>
+        <span>🚿 ${l.baths}</span>
+        <span>🏠 ${l.type}</span>
+        ${l.mls?`<span style="color:var(--gold);font-weight:600">MLS#${l.mls}</span>`:''}
+      </div>
+      <a href="https://wa.me/${BROKER_PHONE}?text=${encodeURIComponent('Hi, I saw '+l.address+' on landerbuiltrealty.com and I am interested. Can you tell me more?')}" target="_blank" class="listing-cta">💬 Ask About This Property</a>
+    </div>
+  </div>`;
+}
+
+// ── BORO PARK SHUL LIST (with addresses & cross streets) ──
+const SHULS = [
+  // BY AVENUE / CORRIDOR
+  '13th Ave corridor – 36th to 64th St','14th Ave corridor – 36th to 64th St',
+  '15th Ave corridor – 36th to 64th St','16th Ave corridor – 36th to 64th St',
+  '17th Ave corridor','18th Ave corridor','20th Ave corridor',
+  'New Utrecht Ave','Fort Hamilton Pkwy','12th Ave corridor',
+  // BY STREET RANGE
+  '36th–39th St (North Boro Park)','40th–44th St','45th–49th St (Central BP)',
+  '50th–54th St','55th–59th St','60th–64th St (South Boro Park)',
+  // MAJOR CHASSIDUS – WITH FULL ADDRESSES
+  'Bobov (Shaarei Zion) – 4715 15th Ave & 47th St',
+  'Bobov-45 – 1362 49th St & 14th Ave',
+  'Belz – 1601 42nd St & 15th Ave',
+  'Belz – 1407 36th St & 14th Ave',
+  'Belz – 4910 14th Ave & 39th St',
+  'Belz (Lomdei Torah / 18th Ave) – 1851 54th St & 18th Ave',
+  'Belz (Ohel Yehoshua) – 16th Ave & 47th St',
+  'Satmar (Yetev Lev) – 1260 53rd St & 13th Ave',
+  'Satmar – 1543 54th St & Fort Hamilton Pkwy',
+  'Satmar – 1010 45th St & 10th Ave',
+  'Ger (Chasidei Gur) – 4520 13th Ave & 45th St',
+  'Ger (Chasidei Gur) – 5003 16th Ave & 50th St',
+  'Ger (Chasidei Gur) – 5116 18th Ave & 51st St',
+  'Vizhnitz (Yeshuas Moshe) – 1336 53rd St & 14th Ave',
+  'Vizhnitz (Khal Toras Chaim) – 14th Ave & 55th St',
+  'Munkatch – 5202 13th Ave & 52nd St',
+  'Skver – 1249 43rd St & 12th Ave',
+  'Karlin-Stolin – 1818 54th St & 14th Ave',
+  'Pupa – 4912 16th Ave & 49th St',
+  'Spinka – 1432 54th St & 14th Ave',
+  'Biala – 4603 13th Ave & 46th St',
+  'Boyan – 1205 44th St & 12th Ave',
+  'Breslov – 4313 15th Ave & 43rd St',
+  'Chernobyl – 4614 14th Ave & 46th St',
+  'Burshtin – 5105 16th Ave & 51st St',
+  'Koson (Ateres Shalom) – 4410 14th Ave & 44th St',
+  'Koson (Beth Halevy) – 4907 14th Ave & 49th St',
+  'Amshinov – 1559 56th St & 16th Ave',
+  'Alexander – 5011 16th Ave & 50th St',
+  'Radomsk – 1349 43rd St & 13th Ave',
+  'Komarno – 4317 13th Ave & 43rd St',
+  'Dinov – 1343 59th St & 13th Ave',
+  'Apsha (Ahavas Torah) – 1420 47th St & 14th Ave',
+  'Liska (Ateres Tzvi) – 4906 14th Ave & 49th St',
+  'Pressburg (Chasam Sofer) – 4906 13th Ave & 49th St',
+  'Vien (Adas Yereim) – 1350 50th St & 13th Ave',
+  'Vien (Birchas Avrohom) – 15th Ave & 45th St',
+  'Beled – 1307 47th St & 13th Ave',
+  'Krasna – 5001 16th Ave & 50th St',
+  'Altstadt (Nachlas Yaakov) – 4414 14th Ave & 44th St',
+  'Drubitch (Beer Elozor) – 4506 13th Ave & 45th St',
+  'Ecsed (Bais Naftuli) – 4816 13th Ave & 48th St',
+  'Faltichan (Avnei Shaish) – 13th Ave & 46th St',
+  'Chabad (Tiferes Levi Yitzchok) – 1526 38th St & 15th Ave',
+  'Chabad (Bais Menachem) – 4814 16th Ave & 48th St',
+  'Chabad (Heichal Menachem) – 4408 13th Ave & 44th St',
+  'Agudath Israel (Zichron Moshe) – 14th Ave & 47th St',
+  'Anshei Sfard (Sfardishe Shul) – 4502 14th Ave & 45th St',
+  'Beth Israel of Boro Park – 5602 11th Ave & 56th St',
+  'Boro Park Center (MJG) – 4915 10th Ave & 49th St',
+  'Torah Vodaath – 425 E 9th St (17th Ave & 55th St)',
+  'Shomrei Emunah – 1449 49th St & 14th Ave',
+  'Rachmistrivka – 4520 15th Ave & 45th St',
+  'Toldos Yehudah (Stutchiner) – 6100 16th Ave & 61st St',
+  'Meor Hatefilah – 20th Ave & 59th St',
+  'Heichal Hatefilah – 1650-56 56th St & 16th Ave',
+  'Raslowitz (Avnei Pinchos) – 5402 17th Ave & 54th St',
+  'Novominsk – 4915 16th Ave & 49th St',
+  'Lelov – 4419 13th Ave & 44th St',
+  'Stolin (Karlin-Stolin) – 4804 14th Ave & 48th St',
+  'Bertch (Bnei Yissoscher) – 4611 14th Ave & 46th St',
+  'Rakovitz (Chemed Shlomo) – 4702 14th Ave & 47th St',
+  'Sopron – 1366 48th St & 13th Ave',
+  'Dome Synagogue – 4802 10th Ave & 48th St',
+  'Young Israel Beth El – 4050 12th Ave & 40th St',
+  // FLATBUSH
+  'Flatbush Jewish Center – 327 E 5th St & Caton Ave',
+  'Young Israel of Flatbush – 1012 Ave I & E 10th St',
+  'Young Israel of Ocean Parkway – 1012 Ocean Pkwy & Ave J',
+  'Young Israel of Avenue J – 1132 Ave J & E 12th St',
+  'Young Israel of Avenue K – 1809 Ave K & E 18th St',
+  'Kollel of Flatbush – 2504 Ave K & E 25th St',
+  'Minyan Vasikin / Lakewood Minyan – 1495 Coney Island Ave & Ave L',
+  'Yavneh Minyan – 1208 Ave M & E 13th St',
+  'Chabad of Flatbush – 1923 Ocean Ave & Ave S',
+  'Flatbush Park Jewish Center – 6363 Ave U & E 63rd St',
+  'Persian Congregation – 1434 Ocean Pkwy & Ave N',
+  'Etz Chaim of Flatbush – 1649 E 13th St & Ave Q',
+  // MIDWOOD
+  'Agudath Israel of Midwood – 817 Ave H & E 9th St',
+  'Agudas Achim of Midwood – 1564 Coney Island Ave & Ave M',
+  'Young Israel of Midwood – 1694 Ocean Ave & Ave Q',
+  'Ateret Avot of Midwood – 1410 E 10th St & Ave N',
+  'B\'Nai Israel of Midwood – 4815 Ave I & E 48th St',
+  'Yeshivas Chaim Berlin – 1605 Coney Island Ave & Ave P',
+  // CROWN HEIGHTS
+  '770 Eastern Pkwy (Chabad HQ) – Eastern Pkwy & Kingston Ave',
+  'Bais Levi Yitzchak – 556 Crown St & Brooklyn Ave',
+  'Oihel Nosson – 580 Crown St & Brooklyn Ave',
+  'Khal Chassidim (Baumgarten\'s) – 1612 Carroll St & Kingston Ave',
+  'Best Shul – 382 Crown St & New York Ave',
+  'Spinka Crown Heights – 667 Crown St & Troy Ave',
+  // WILLIAMSBURG
+  'Satmar (Main / Yetev Lev) – 152 Rodney St & Bedford Ave',
+  'Satmar (Lee Gardens) – 500 Bedford Ave & Marcy Ave',
+  'Satmar (South 8th St) – 140 S 8th St & Bedford Ave',
+  'Vizhnitz Williamsburg – 76 Heyward St & Bedford Ave',
+  'Sanz-Klausenburg – 55 Rutledge St & Bedford Ave',
+  'Pupa – 91 Ross St & Bedford Ave',
+  'Spinka (Toldos Tzvi) – 52 Hewes St & Lee Ave',
+  'Skulen (Netzach Israel) – 107 Rodney St & Marcy Ave',
+  'Tosh Williamsburg – 144 Wilson St & Lorimer St',
+  'P\'shevorsk – 68 Lee Ave & Marcy Ave',
+  'Kretchnif Williamsburg – 98 Hewes St & Lee Ave',
+  'Belz Williamsburg – 135 Lee Ave & Marcy Ave',
+  'Stropkov – 46 Keap St & Lee Ave',
+  // NEARBY
+  'Flatbush – Midwood','Flatbush – Ave J / K area',
+  'Bensonhurst','Kensington','Sunset Park','Crown Heights','Other Brooklyn'
+];
+
+function filterShulSearch(){
+  const q = (document.getElementById('s-shul').value||'').toLowerCase();
+  const box = document.getElementById('shul-suggestions');
+  if(!q){ box.style.display='none'; return; }
+  const matches = SHULS.filter(s=>s.toLowerCase().includes(q)).slice(0,8);
+  if(!matches.length){ box.style.display='none'; return; }
+  box.innerHTML = matches.map(s=>`<div onclick="pickShulSuggestion('${s.replace(/'/g,"\\'")}') " style="padding:10px 14px;font-size:0.85rem;cursor:pointer;color:#111;border-bottom:1px solid #f0ede6;" onmouseover="this.style.background='#fdf9ee'" onmouseout="this.style.background=''">${s}</div>`).join('');
+  box.style.display='block';
+  document.addEventListener('click', function h(e){ if(!e.target.closest('#s-shul')&&!e.target.closest('#shul-suggestions')){ box.style.display='none'; document.removeEventListener('click',h); }});
+}
+
+function pickShulSuggestion(val){
+  document.getElementById('s-shul').value = val;
+  document.getElementById('shul-suggestions').style.display='none';
+  filterListings();
+}
+
+// ── SEARCH / FILTER ──
+function filterListings(){
+  const shul      = document.getElementById('s-shul').value.toLowerCase();
+  const type      = document.getElementById('s-type').value;
+  const proptype  = document.getElementById('s-proptype').value;
+  const beds      = document.getElementById('s-beds').value;
+  const maxprice  = document.getElementById('s-maxprice').value;
+  const incprice  = document.getElementById('s-income-price').value;
+  const res       = document.getElementById('search-results');
+  let myListings  = getMyListings();
+
+  let filtered = myListings.filter(l=>{
+    const areaMatch  = !shul || (l.area||'').toLowerCase().includes(shul)||(l.address||'').toLowerCase().includes(shul)||(l.notes||'').toLowerCase().includes(shul)||(l.features||[]).join(' ').toLowerCase().includes(shul);
+    const typeMatch  = !type || l.salerent===type;
+    const ptMatch    = !proptype || l.type===proptype;
+    const bedsMatch  = !beds || parseInt(l.beds)>=parseInt(beds) || l.beds===beds;
+    const lp         = extractPrice(l.price);
+    // Match if within regular budget OR within income budget (for multi-family)
+    const priceMatch = !maxprice || lp<=parseInt(maxprice) || (incprice && lp<=parseInt(incprice) && (l.type==='Multi-Family'||l.type==='House'));
+    return areaMatch&&typeMatch&&ptMatch&&bedsMatch&&priceMatch;
+  });
+
+  const isFiltered = shul||type||proptype||beds||maxprice||incprice;
+
+  const mlsHTML = `<div style="margin-top:28px;padding:22px;background:rgba(255,255,255,0.06);border-radius:10px;border:1px solid rgba(196,154,42,0.2);text-align:center;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:var(--white);margin-bottom:8px">📋 See Full MLS Inventory</div>
+    <p style="font-size:0.83rem;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:14px">We have access to every listing on MyState MLS in Boro Park. WhatsApp us your search and we'll send you everything that matches — including off-market properties.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://wa.me/${BROKER_PHONE}?text=${encodeURIComponent('Hi, I am looking for a property in Boro Park'+(shul?' near '+document.getElementById('s-shul').value:'')+(beds?' with '+beds+'+ bedrooms':'')+(maxprice?' up to $'+parseInt(maxprice).toLocaleString():'')+'. Can you send me matching MLS listings?')}" target="_blank" style="padding:10px 20px;background:#25d366;color:white;border-radius:4px;font-weight:700;font-size:0.8rem;text-decoration:none;letter-spacing:0.05em;text-transform:uppercase;">💬 WhatsApp for MLS</a>
+      <a href="tel:${BROKER_PHONE}" style="padding:10px 20px;background:var(--black);color:white;border-radius:4px;font-weight:700;font-size:0.8rem;text-decoration:none;letter-spacing:0.05em;text-transform:uppercase;border:1px solid rgba(255,255,255,0.15);">📞 Call Us</a>
+    </div>
+  </div>`;
+
+  const showList = isFiltered ? filtered : myListings.slice(0,6);
+
+  if(!showList.length&&!isFiltered){
+    res.innerHTML=`<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.35);font-size:0.9rem">New listings coming soon — contact us for current availability.</div>${mlsHTML}`;
+  } else {
+    res.innerHTML=`
+      ${isFiltered?`<div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;font-weight:500">${filtered.length} matching listing${filtered.length!==1?'s':''} found</div>`:`<div style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;font-weight:500">Our Current Listings</div>`}
+      ${showList.length?`<div class="listings-grid">${showList.map(l=>listingCardHTML(l,true)).join('')}</div>`:`<div style="text-align:center;padding:22px;color:rgba(255,255,255,0.35);font-size:0.87rem">No matching listings right now — we may have unlisted properties that fit. Contact us!</div>`}
+      ${mlsHTML}`;
+  }
+  document.querySelectorAll('#search-results .listing-card.fade-up').forEach(el=>observer.observe(el));
+}
+
+// ── WISH LIST TRACKER ──
+function lookupWishList(){
+  const phone = document.getElementById('tracker-phone').value.trim().replace(/\D/g,'');
+  const res   = document.getElementById('tracker-result');
+  if(!phone||phone.length<7){ res.innerHTML='<div style="color:#a33030;font-size:0.85rem;padding:8px 0;">Please enter a valid phone number.</div>'; return; }
+
+  try{
+    const clients = JSON.parse(localStorage.getItem('lbr_clients')||'[]');
+    const match   = clients.find(c=>(c.phone||'').replace(/\D/g,'').includes(phone)||phone.includes((c.phone||'').replace(/\D/g,'')));
+
+    if(!match){
+      res.innerHTML=`<div style="background:#fef9ee;border:1px solid var(--gold);border-radius:8px;padding:16px;margin-top:4px;">
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px;">📋 Not Found Yet</div>
+        <div style="font-size:0.83rem;color:var(--gray);line-height:1.6;">We don't have a wish list on file for this number yet. <a href="#wishlist" style="color:var(--black);font-weight:700;">Submit your wish list</a> and we'll start searching for you right away!</div>
+      </div>`;
+      return;
+    }
+
+    const statusColor = match.followUp ? '#b45309' : '#166534';
+    const statusText  = match.followUp ? '🔔 We have an update for you — we\'ll be in touch shortly!' : '✅ Your wish list is active — we\'re searching for you!';
+    res.innerHTML=`<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:18px;margin-top:4px;">
+      <div style="font-weight:700;font-size:1rem;color:#166534;margin-bottom:10px;">✅ Found! Hello, ${match.name}!</div>
+      <div style="font-size:0.83rem;color:#333;line-height:1.8;margin-bottom:12px;">
+        <strong>Looking to:</strong> ${match.intent} · ${match.proptype||'Any type'}<br>
+        <strong>Budget:</strong> ${match.minprice||'?'} – ${match.maxprice||'?'}${match.maxIncomePrice?' (up to '+match.maxIncomePrice+' with income)':''}<br>
+        <strong>Bedrooms:</strong> ${match.beds||'Any'}<br>
+        <strong>Area:</strong> ${match.areas||'Boro Park'}<br>
+        ${match.notes?`<strong>Notes:</strong> ${match.notes.replace(' [From website wish list]','')}<br>`:''}
+        <strong>Submitted:</strong> ${match.added}
+      </div>
+      <div style="background:${statusColor}18;border-radius:6px;padding:10px 12px;font-size:0.82rem;font-weight:600;color:${statusColor};margin-bottom:12px;">${statusText}</div>
+      <a href="https://wa.me/${BROKER_PHONE}?text=${encodeURIComponent('Hi, this is '+match.name+'. I am checking on my wish list status.')}" target="_blank" style="display:block;padding:10px;background:#25d366;color:white;text-align:center;border-radius:6px;font-weight:700;font-size:0.82rem;text-decoration:none;">💬 WhatsApp Us for an Update</a>
+    </div>`;
+  }catch(e){
+    res.innerHTML='<div style="color:#a33030;font-size:0.85rem;padding:8px 0;">Something went wrong. Please try again.</div>';
+  }
+}
+
+// ── FEATURED LISTING ──
+function renderFeaturedListing(){
+  const wrap = document.getElementById('featured-listing-wrap');
+  const titleEl = document.getElementById('featured-title');
+  if(!wrap) return;
+
+  let allListings = [];
+  try{ allListings = JSON.parse(localStorage.getItem('lbr_listings')||'[]'); }catch(e){}
+
+  const featured = allListings.find(l => l.featured);
+
+  if(!featured){
+    // Hide the section entirely if no featured listing
+    const section = document.getElementById('featured');
+    if(section) section.style.display='none';
+    return;
+  }
+
+  // Show section
+  const section = document.getElementById('featured');
+  if(section) section.style.display='';
+
+  if(titleEl) titleEl.textContent = 'Now Available — ' + (featured.area || featured.address);
+
+  wrap.innerHTML = `
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(196,154,42,0.3);border-radius:14px;overflow:hidden;">
+      ${featured.photos&&featured.photos.length ? `<div style="height:280px;overflow:hidden;"><img src="${featured.photos[0]}" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>` : ''}
+      <div style="background:linear-gradient(135deg,rgba(196,154,42,0.2),rgba(196,154,42,0.05));padding:24px 28px 18px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);letter-spacing:0.03em;">${featured.price||'Price on Request'}</div>
+            <div style="font-size:1.05rem;font-weight:700;color:var(--white);margin:4px 0 2px;">${featured.address}</div>
+            <div style="font-size:0.88rem;color:rgba(255,255,255,0.55);">${featured.area||''}${featured.zip?' · '+featured.zip:''}</div>
+          </div>
+          <span style="background:var(--gold);color:var(--black);padding:6px 16px;border-radius:3px;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">${featured.salerent==='Rent'?'For Rent':'For Sale'}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div style="padding:14px;text-align:center;border-right:1px solid rgba(255,255,255,0.07);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);">${featured.beds||'—'}</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Beds</div>
+        </div>
+        <div style="padding:14px;text-align:center;border-right:1px solid rgba(255,255,255,0.07);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);">${featured.baths||'—'}</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Baths</div>
+        </div>
+        <div style="padding:14px;text-align:center;border-right:1px solid rgba(255,255,255,0.07);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);">${featured.sqft||'—'}</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Sq Ft</div>
+        </div>
+        <div style="padding:14px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);">${featured.type||'House'}</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Type</div>
+        </div>
+      </div>
+      <div style="padding:22px 28px;">
+        ${featured.notes?`<p style="font-size:0.95rem;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:16px;">${featured.notes.replace(' [From website wish list]','')}</p>`:''}
+        ${featured.features&&featured.features.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">${featured.features.map(f=>`<span style="background:rgba(196,154,42,0.12);border:1px solid rgba(196,154,42,0.25);color:rgba(255,255,255,0.7);padding:4px 12px;border-radius:20px;font-size:0.78rem;">✓ ${f}</span>`).join('')}</div>`:'' }
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="https://wa.me/19175671780?text=${encodeURIComponent('Hi, I am interested in '+featured.address+'. Can you tell me more?')}" target="_blank" style="flex:1;min-width:140px;padding:12px;background:#25d366;color:white;text-align:center;border-radius:5px;font-weight:700;font-size:0.85rem;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">💬 Ask About This</a>
+          <a href="tel:9175671780" style="flex:1;min-width:140px;padding:12px;background:var(--gold);color:var(--black);text-align:center;border-radius:5px;font-weight:700;font-size:0.85rem;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">📞 917-567-1780</a>
+        </div>
+        ${featured.mls?`<div style="margin-top:10px;font-size:0.72rem;color:rgba(255,255,255,0.25);text-align:center;">MLS# ${featured.mls} · Listed by Lander Built Realty</div>`:''}
+      </div>
+    </div>`;
+}
+
+
+// ── FEATURED LISTING (pulls from CRM localStorage) ──
+function renderFeaturedListing(){
+  const container = document.getElementById('featured-container');
+  if(!container) return;
+
+  let listings = [];
+  try { listings = JSON.parse(localStorage.getItem('lbr_listings')||'[]'); } catch(e){}
+  const featured = listings.find(l => l.featured);
+
+  if(!featured){
+    // Hide the section entirely if nothing is featured
+    const section = document.getElementById('featured');
+    if(section) section.style.display = 'none';
+    return;
+  }
+
+  // Show the section
+  const section = document.getElementById('featured');
+  if(section) section.style.display = '';
+
+  const photo = featured.photos && featured.photos.length
+    ? `<div style="height:280px;overflow:hidden;border-radius:12px;margin-bottom:24px;"><img src="${featured.photos[0]}" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>`
+    : '';
+
+  const features = (featured.features||[]).map(f =>
+    `<div style="font-size:0.82rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:6px;"><span style="color:var(--gold);">✓</span> ${f}</div>`
+  ).join('');
+
+  const waMsg = encodeURIComponent('Hi, I am interested in '+featured.address+'. Can you tell me more?');
+
+  container.innerHTML = `
+    <div class="fade-up" style="text-align:center;margin-bottom:44px;">
+      <div class="section-label" style="color:var(--gold);">⭐ Featured Listing</div>
+      <div class="section-title" style="color:var(--white);">Now Available —<br>${featured.area||featured.address}</div>
+    </div>
+    <div class="fade-up" style="max-width:800px;margin:0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(196,154,42,0.3);border-radius:14px;overflow:hidden;">
+      ${photo}
+      <div style="background:linear-gradient(135deg,rgba(196,154,42,0.2),rgba(196,154,42,0.05));padding:28px 28px 20px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);">${featured.price||'Price on Request'}</div>
+            <div style="font-size:1.05rem;font-weight:700;color:white;margin:4px 0 2px;">${featured.address}</div>
+            <div style="font-size:0.88rem;color:rgba(255,255,255,0.55);">${featured.area||''}${featured.zip?' · '+featured.zip:''}</div>
+          </div>
+          <span style="background:var(--gold);color:var(--black);padding:6px 16px;border-radius:3px;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">${featured.salerent==='Rent'?'For Rent':'For Sale'}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div style="padding:16px;text-align:center;border-right:1px solid rgba(255,255,255,0.07);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--gold);">${featured.beds||'—'}</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Bedrooms</div>
+        </div>
+        <div style="padding:16px;text-align:center;border-right:1px solid rgba(255,255,255,0.07);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--gold);">${featured.baths||'—'}</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Bathrooms</div>
+        </div>
+        <div style="padding:16px;text-align:center;border-right:1px solid rgba(255,255,255,0.07);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--gold);">${featured.sqft||'—'}</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Sq Ft</div>
+        </div>
+        <div style="padding:16px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--gold);">${featured.type||'—'}</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;">Type</div>
+        </div>
+      </div>
+      <div style="padding:24px 28px;">
+        ${featured.notes?`<p style="font-size:0.95rem;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:18px;">${featured.notes.replace(' [From website wish list]','')}</p>`:''}
+        ${features?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">${features}</div>`:''}
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="https://wa.me/19175671780?text=${waMsg}" target="_blank" style="flex:1;min-width:160px;padding:13px;background:#25d366;color:white;text-align:center;border-radius:5px;font-weight:700;font-size:0.85rem;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">💬 Ask About This Home</a>
+          <a href="tel:9175671780" style="flex:1;min-width:160px;padding:13px;background:var(--gold);color:var(--black);text-align:center;border-radius:5px;font-weight:700;font-size:0.85rem;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">📞 Call 917-567-1780</a>
+        </div>
+        ${featured.mls?`<div style="margin-top:12px;font-size:0.72rem;color:rgba(255,255,255,0.25);text-align:center;">MLS# ${featured.mls} · Lander Built Realty · 917-567-1780</div>`:''}
+      </div>
+    </div>`;
+
+  // Observe new fade-up elements
+  container.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+}
+
+// ── RECENTLY SOLD ──
+const SOLD_HIGHLIGHTS = [
+  { address:'48th St, Boro Park', area:'Boro Park, Brooklyn', price:'$1,350,000', type:'Semi-Detached House', highlight:'Listed & in contract within 6 days' },
+  { address:'14th Ave, Boro Park', area:'Boro Park, Brooklyn', price:'$875,000', type:'2-Family House', highlight:'Multiple offers — sold above asking' },
+  { address:'53rd St, Boro Park', area:'Boro Park, Brooklyn', price:'$620,000', type:'Apartment', highlight:'Matched buyer from our wish list database' },
+];
+
+function renderSoldGrid(){
+  const grid = document.getElementById('sold-grid');
+  if(!grid) return;
+  let crmSold = [];
+  try {
+    const all = JSON.parse(localStorage.getItem('lbr_listings')||'[]');
+    crmSold = all.filter(l => l.status==='Sold'||l.status==='Closed');
+  } catch(e){}
+  const allSold = [
+    ...SOLD_HIGHLIGHTS,
+    ...crmSold.map(l=>({ address:l.address, area:l.area||'Boro Park, Brooklyn', price:l.price||'Sold', type:l.type||'', highlight:'' }))
+  ];
+  if(!allSold.length){
+    grid.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.9rem;grid-column:1/-1;padding:20px;">Recent sales coming soon.</div>';
+    return;
+  }
+  grid.innerHTML = allSold.map(s=>`
+    <div class="fade-up" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+      <div style="background:var(--gold);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.12em;color:var(--black);">✅ SOLD</span>
+        <span style="font-size:0.7rem;font-weight:700;color:var(--black);opacity:0.7;text-transform:uppercase;letter-spacing:0.06em;">Lander Built Realty</span>
+      </div>
+      <div style="padding:18px 18px 20px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);letter-spacing:0.03em;margin-bottom:4px;">${s.price}</div>
+        <div style="font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:3px;">${s.address}</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:${s.highlight?'10px':'0'};">${s.area}${s.type?' · '+s.type:''}</div>
+        ${s.highlight?`<div style="background:rgba(196,154,42,0.1);border-left:3px solid var(--gold);padding:7px 10px;font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.5;font-style:italic;">${s.highlight}</div>`:''}
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+}
+
+// ── INIT ──
+filterListings();
+renderFeaturedListing();
+renderSoldGrid();
+buildFAQ();
+calcMortgage();
+
+
+/* ── SHUL SEARCHABLE DROPDOWN ── */
+  const url   = document.getElementById('scan-url').value.trim();
+  if (!url) { toast('⚠️ Please paste a website URL first.'); return; }
+  const mode  = document.getElementById('scan-mode').value;
+  const focus = document.getElementById('scan-focus').value.trim();
+  const btn   = document.getElementById('scan-btn');
+  const res   = document.getElementById('scan-results');
+  btn.disabled = true; btn.textContent = 'Scanning…';
+  res.innerHTML = '<div class="ai-loading"><div class="spinner"></div>Fetching and scanning the page…<br><small style="color:var(--muted)">This takes about 15–20 seconds</small></div>';
+
+  try {
+    const clientSummary = clients.map((c,i) =>
+      `CLIENT ${i+1}: ${c.name} | ${c.intent} | ${c.proptype} | Budget ${c.minprice||'?'}–${c.maxprice||'?'}${c.maxIncomePrice?' | With-income budget up to '+c.maxIncomePrice+' needing '+( c.incomeNeeded||'rental income')+' ('+( c.incomeType||'income property')+')'  :''} | Beds:${c.beds} | Area:${c.areas||'Boro Park'} | Phone:${c.phone||'none'} | Email:${c.email||'none'}`
+    ).join('\n');
+
+    const listingSummary = listings.map((l,i) =>
+      `LISTING ${i+1}: ${l.address} | ${l.salerent} | ${l.beds} bed ${l.type} | ${l.price||'?'} | ${l.area||'Boro Park'}`
+    ).join('\n');
+
+    const prompt = `You are a real estate assistant for Lander Built Realty in Boro Park, Brooklyn.
+
+Please search the web for real estate listings and ads from this URL: ${url}
+${focus ? 'Focus filter: ' + focus : ''}
+
+After finding the content, compare it against these clients and listings:
+
+MY CLIENTS:
+${clientSummary || 'None saved yet.'}
+
+MY LISTINGS:
+${listingSummary || 'None saved yet.'}
+
+Scan mode: ${mode === 'both' ? 'Find listings matching my clients AND buyers in ads matching my listings' : mode === 'listings' ? 'Find listings in the ads matching my clients' : 'Find buyers in the ads matching my listings'}
+
+IMPORTANT: For clients with a with-income budget, also match them against properties priced up to their income budget if the property could generate rental income.
+
+Return a JSON array only — no markdown, no extra text. Each match object must have:
+- matchType ("listing_for_client" or "buyer_for_listing")
+- adSummary (what the ad says)
+- matchedWith (client name or listing address)
+- matchReason (1-2 sentences — mention income budget if relevant)
+- contactInfo (phone or email from the ad if visible, else empty string)
+- urgency ("high", "medium", or "low")
+
+Return [] if nothing matches.`;
+
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await r.json();
+    const text = data.content.map(b => b.type === 'text' ? b.text : '').join('');
+    const matches = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+    if (!matches.length) {
+      res.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>No matches found on this page today.<br><small style="font-size:0.8rem;color:var(--muted)">Try again tomorrow or paste a different URL.</small></div>';
+    } else {
+      res.innerHTML = `<div style="margin-bottom:14px;font-size:0.88rem;font-weight:700;color:var(--navy)">${matches.length} match${matches.length!==1?'es':''} found 🎯</div>` +
+        matches.map(m => `
+          <div class="card" style="border-left:4px solid ${m.urgency==='high'?'var(--green)':m.urgency==='medium'?'var(--gold)':'var(--border)'}">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div class="card-name">${m.matchType==='listing_for_client'?'🏠 Listing for your client':'👤 Buyer for your listing'}</div>
+              <span style="font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;background:${m.urgency==='high'?'#dcfce7':m.urgency==='medium'?'#fef3c7':'#f3f4f6'};color:${m.urgency==='high'?'#166534':m.urgency==='medium'?'#92400e':'#6b7280'}">${m.urgency} priority</span>
+            </div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:4px">📋 ${m.adSummary}</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">↔️ Matches: <strong style="color:var(--navy)">${m.matchedWith}</strong></div>
+            <div style="font-size:0.82rem;color:#555;margin-bottom:10px;line-height:1.55">${m.matchReason}</div>
+            ${m.contactInfo?`<div style="font-size:0.8rem;font-weight:600;color:var(--navy);margin-bottom:10px">📞 ${m.contactInfo}</div>`:''}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${m.contactInfo&&m.contactInfo.match(/[\d\-\(\)]{10,}/)?
+                `<a href="tel:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-green" style="font-size:0.76rem;padding:7px 14px">📞 Call</a>
+                 <a href="sms:${m.contactInfo.replace(/\D/g,'')}" class="btn btn-navy" style="font-size:0.76rem;padding:7px 14px">💬 Text</a>`:''}
+            </div>
+          </div>`).join('');
+    }
+  } catch(e) {
+    res.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div>Could not scan that page. Try a different URL or check your connection.</div>';
+  }
+  btn.disabled = false; btn.textContent = '📰 Scan Now';
+}
+
+/* ── SHUL SEARCHABLE DROPDOWN ── */
+const SHUL_LIST = [
+  {group:'BY AVENUE'},
+  {label:'13th Ave corridor',val:'13th Ave corridor'},
+  {label:'14th Ave corridor',val:'14th Ave corridor'},
+  {label:'15th Ave corridor',val:'15th Ave corridor'},
+  {label:'16th Ave corridor',val:'16th Ave corridor'},
+  {label:'17th Ave corridor',val:'17th Ave corridor'},
+  {label:'18th Ave corridor',val:'18th Ave corridor'},
+  {label:'20th Ave corridor',val:'20th Ave corridor'},
+  {label:'New Utrecht Ave corridor',val:'New Utrecht Ave corridor'},
+  {label:'Fort Hamilton Pkwy corridor',val:'Fort Hamilton Pkwy corridor'},
+  {label:'Dahill Rd area',val:'Dahill Rd area'},
+  {group:'BY STREET RANGE'},
+  {label:'36th – 39th St (North BP)',val:'36th–39th St'},
+  {label:'40th – 44th St',val:'40th–44th St'},
+  {label:'45th – 49th St (Central BP)',val:'45th–49th St'},
+  {label:'50th – 54th St',val:'50th–54th St'},
+  {label:'55th – 59th St',val:'55th–59th St'},
+  {label:'60th – 64th St (South BP)',val:'60th–64th St'},
+  {group:'MAJOR SHULS & CHASSIDUS'},
+  {label:'Bobov 45 – 1362 49th St & 14th Ave',val:'Near Bobov 45'},
+  {label:'Bobov 48 – 4715 15th Ave & 47th St',val:'Near Bobov 48'},
+  {label:'Belz – 1601 42nd St & 15th Ave',val:'Near Belz'},
+  {label:'Belz – 36th St location',val:'Belz – 36th St location'},
+  {label:'Satmar – 53rd St & 13th–14th Ave',val:'Near Satmar 13th Ave'},
+  {label:'Satmar – 54th St & Fort Hamilton Pkwy',val:'Near Satmar Fort Hamilton'},
+  {label:'Munkatch – 5202 13th Ave & 52nd St',val:'Near Munkatch'},
+  {label:'Vizhnitz – 14th Ave & 53rd St',val:'Near Vizhnitz'},
+  {label:'Vien – Adas Yereim – 1350 50th St',val:'Near Vien'},
+  {label:'Spinka – 54th St & 14th Ave',val:'Near Spinka'},
+  {label:'Ger – 13th Ave & 42nd St',val:'Near Ger'},
+  {label:'Karlin-Stolin – 14th Ave & 54th St',val:'Near Karlin-Stolin'},
+  {label:'Skver – 12th Ave & 43rd St',val:'Near Skver'},
+  {label:'Pupa – 16th Ave & 49th St',val:'Near Pupa'},
+  {label:'Near Rachmistrivka (45th St)',val:'Near Rachmistrivka'},
+  {label:'Near Toldos Yehudah – Stutchiner (61st St)',val:'Near Toldos Yehudah Stutchiner'},
+  {label:'Near Meor Hatefilah (20th Ave)',val:'Near Meor Hatefilah'},
+  {label:'Near Heichal Hatefilah (1650 – 56th St)',val:'Near Heichal Hatefilah'},
+  {label:'Near Raslowitz – Avnei Pinchos (17th Ave)',val:'Near Raslowitz'},
+  {label:'Boyan – 1205 44th St',val:'Near Boyan'},
+  {label:'Near Biala (13th Ave)',val:'Near Biala'},
+  {label:'Near Burshtin (16th Ave)',val:'Near Burshtin'},
+  {label:'Near Chernobyl (14th Ave)',val:'Near Chernobyl'},
+  {label:'Near Klausenburg – Sanz (15th Ave)',val:'Near Klausenburg'},
+  {label:'Breslov – 4313 15th Ave & 43rd St',val:'Near Breslov'},
+  {label:'Near Koson – Ateres Shalom (14th Ave)',val:'Near Koson'},
+  {label:'Near Amshinov (16th Ave)',val:'Near Amshinov'},
+  {label:'Near Kosov (13th Ave)',val:'Near Kosov'},
+  {label:'Near Dinov (13th Ave)',val:'Near Dinov'},
+  {label:'Near Liska – Ateres Tzvi (14th Ave)',val:'Near Liska'},
+  {label:'Near Pressburg – Chesev Sofer (13th Ave)',val:'Near Pressburg'},
+  {label:'Near Beled (14th Ave)',val:'Near Beled'},
+  {label:'Krasna – 16th Ave',val:'Near Krasna'},
+  {label:'Faltichan – Avnei Shaish – 13th Ave',val:'Near Faltichan'},
+  {label:'Near Altstadt – Nachlas Yakov (14th Ave)',val:'Near Altstadt'},
+  {label:'Near Drubitch – Beer Elozor (13th Ave)',val:'Near Drubitch'},
+  {label:'Near Ecsed – Bais Naftuli (13th Ave)',val:'Near Ecsed'},
+  {label:'Near Apsha (14th Ave)',val:'Near Apsha'},
+  {label:'Near Novominsk (16th Ave)',val:'Near Novominsk'},
+  {label:'Chabad – Heichal Menachem – 13th Ave & 46th St',val:'Near Lubavitch Chabad'},
+  {group:'SCHOOLS & LANDMARKS'},
+  {label:'Torah Vodaas – 17th Ave & 55th St',val:'Near Torah Vodaas'},
+  {label:'Near Shomrei Emunah (14th Ave)',val:'Near Shomrei Emunah'},
+  {label:'Anshei Sfard – Sfardishe Shul – 4502 14th Ave & 45th St',val:'Near Shomrei Shabbos'},
+  {label:'Near Bais Yaakov (16th Ave)',val:'Near Bais Yaakov'},
+  {label:'Bais Rachel – Satmar Girls – 14th Ave & 53rd–54th St',val:'Near Bais Rachel'},
+  {label:'Near 13th Ave & 48th St (Main Shopping Strip)',val:'Near 13th Ave Main Strip'},
+  {label:'Maimonides Medical Center – 4802 10th Ave & 48th St',val:'Near Maimonides'},
+  {group:'NEARBY NEIGHBORHOODS'},
+  {label:'Flatbush – Midwood',val:'Flatbush Midwood'},
+  {label:'Flatbush – Ave J / K area',val:'Flatbush Ave J'},
+  {label:'Bensonhurst',val:'Bensonhurst'},
+  {label:'Kensington',val:'Kensington'},
+  {label:'Sunset Park',val:'Sunset Park'},
+  {label:'Crown Heights',val:'Crown Heights'},
+  {label:'Other Brooklyn',val:'Other Brooklyn'},
+];
+
+function buildShulHTML(prefix, filter) {
+  let html='', lastGroup='', shownGroup=false;
+  SHUL_LIST.forEach(item=>{
+    if(item.group){lastGroup=item.group;shownGroup=false;return;}
+    if(filter && !item.label.toLowerCase().includes(filter.toLowerCase())) return;
+    if(!shownGroup){html+=`<div class="shul-group">${lastGroup}</div>`;shownGroup=true;}
+    html+=`<div class="shul-opt" onclick="pickShul('${prefix}',${JSON.stringify(item.val)},${JSON.stringify(item.label)})">${item.label}</div>`;
+  });
+  return html||'<div class="shul-opt" style="color:var(--muted);cursor:default">No results — try different spelling</div>';
+}
+function showShulList(prefix){
+  const id=prefix==='l'?'l-shul-list':'c-shul-list';
+  const el=document.getElementById(id); if(!el) return;
+  el.innerHTML=buildShulHTML(prefix,''); el.style.display='block';
+  setTimeout(()=>document.addEventListener('click',function h(e){if(!e.target.closest('.fg')){el.style.display='none';document.removeEventListener('click',h);}},{capture:true}),100);
+}
+function filterShuls(prefix){
+  const sid=prefix==='l'?'l-area-search':'c-areas-search';
+  const lid=prefix==='l'?'l-shul-list':'c-shul-list';
+  const el=document.getElementById(lid); if(!el) return;
+  const q=(document.getElementById(sid)||{}).value||'';
+  el.innerHTML=buildShulHTML(prefix,q); el.style.display='block';
+}
+function pickShul(prefix,val,label){
+  const hid=prefix==='l'?'l-area':'c-areas';
+  const sid=prefix==='l'?'l-area-search':'c-areas-search';
+  const did=prefix==='l'?'l-area-display':'c-areas-display';
+  const lid=prefix==='l'?'l-shul-list':'c-shul-list';
+  const h=document.getElementById(hid); if(h) h.value=val;
+  const s=document.getElementById(sid); if(s) s.value=label;
+  const d=document.getElementById(did); if(d) d.textContent='📍 '+label;
+  const l=document.getElementById(lid); if(l) l.style.display='none';
+}
+
+<!-- QUICK LOG MODAL -->
+<div id="quick-log-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--white);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--navy);margin-bottom:6px;" id="ql-title">Log a Call</div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;" id="ql-client-name"></div>
+    <!-- Quick tap options — categorized -->
+    <div style="margin-bottom:12px;">
+      
+      <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;">📞 Phone Call</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+        <button onclick="setQuickNote('📵 Called — no answer')" class="quick-note-btn">📵 No Answer</button>
+        <button onclick="setQuickNote('📬 Called — left voicemail')" class="quick-note-btn">📬 Left Voicemail</button>
+        <button onclick="setQuickNote('🔄 Called — they will call back')" class="quick-note-btn">🔄 Will Call Back</button>
+        <button onclick="setQuickNote('💬 Spoke — good conversation, interested')" class="quick-note-btn">💬 Good Call</button>
+        <button onclick="setQuickNote('📲 Spoke — they asked me to send listings')" class="quick-note-btn">📋 Send Listings</button>
+        <button onclick="setQuickNote('🚫 Spoke — no longer looking')" class="quick-note-btn">🚫 No Longer Looking</button>
+      </div>
+
+      <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;">🏠 Showing</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+        <button onclick="setQuickNote('🏠 Showed property — they liked it, want to see more')" class="quick-note-btn">🏠 Liked It</button>
+        <button onclick="setQuickNote('🏠 Showed property — not the right fit')" class="quick-note-btn">🏠 Not Right</button>
+        <button onclick="setQuickNote('🏠 Showed property — very interested, thinking about it')" class="quick-note-btn">🤔 Thinking</button>
+        <button onclick="setQuickNote('🏠 Showed property — wants to bring spouse/family to see')" class="quick-note-btn">👨‍👩‍👧 Wants Family</button>
+        <button onclick="setQuickNote('🏠 Showed property — made an offer')" class="quick-note-btn">💰 Made Offer</button>
+        <button onclick="setQuickNote('🏠 Showed property — offered but price too high')" class="quick-note-btn">❌ Price Too High</button>
+      </div>
+
+      <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;">📝 Deal Progress</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+        <button onclick="setQuickNote('🤝 In negotiation — going back and forth on price')" class="quick-note-btn">🤝 Negotiating</button>
+        <button onclick="setQuickNote('✅ Offer accepted — going to contract')" class="quick-note-btn">✅ Offer Accepted</button>
+        <button onclick="setQuickNote('📄 Signed contract — in attorney review')" class="quick-note-btn">📄 Contract Signed</button>
+        <button onclick="setQuickNote('🏦 Waiting for mortgage approval')" class="quick-note-btn">🏦 Mortgage Pending</button>
+        <button onclick="setQuickNote('🔑 Closed — deal is done!')" class="quick-note-btn">🔑 CLOSED!</button>
+        <button onclick="setQuickNote('💔 Deal fell through — back to searching')" class="quick-note-btn">💔 Deal Fell Through</button>
+      </div>
+
+      <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;">👥 In Person Meeting</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+        <button onclick="setQuickNote('🤝 Met in person — went over their needs')" class="quick-note-btn">🤝 Met — Good</button>
+        <button onclick="setQuickNote('📋 Met in person — updated their wish list')" class="quick-note-btn">📋 Updated Needs</button>
+        <button onclick="setQuickNote('💬 Met in person — difficult conversation, needs patience')" class="quick-note-btn">😤 Difficult</button>
+        <button onclick="setQuickNote('🌟 Met in person — referred me to someone else')" class="quick-note-btn">🌟 Gave Referral</button>
+      </div>
+
+      <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;">💬 WhatsApp / Text</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <button onclick="setQuickNote('📲 Sent listings via WhatsApp — waiting for response')" class="quick-note-btn">📲 Sent Listings</button>
+        <button onclick="setQuickNote('📲 WhatsApp — they responded, still interested')" class="quick-note-btn">✅ Still Interested</button>
+        <button onclick="setQuickNote('📲 WhatsApp — no response in 3+ days')" class="quick-note-btn">😶 No Response</button>
+        <button onclick="setQuickNote('📲 WhatsApp — asked for price reduction')" class="quick-note-btn">💸 Wants Lower</button>
+      </div>
+
+    </div>
+    <textarea id="ql-note" placeholder="Or type your own note..." rows="3" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:none;margin-bottom:12px;"></textarea>
+    <!-- Follow-up reminder -->
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+      <span style="font-size:0.78rem;color:var(--muted);font-weight:600;">Follow up in:</span>
+      <button onclick="setFollowUp(1)" class="fu-btn">Tomorrow</button>
+      <button onclick="setFollowUp(3)" class="fu-btn">3 Days</button>
+      <button onclick="setFollowUp(7)" class="fu-btn">1 Week</button>
+      <button onclick="setFollowUp(14)" class="fu-btn">2 Weeks</button>
+      <button onclick="setFollowUp(0)" class="fu-btn" id="fu-none-btn" style="background:var(--gold);color:var(--navy);">No Follow-Up</button>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="saveQuickLog()" class="btn btn-navy" style="flex:1;padding:13px;">💾 Save Log</button>
+      <button onclick="closeQuickLog()" class="btn btn-outline" style="padding:13px 18px;">Cancel</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
