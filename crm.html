@@ -102,7 +102,7 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
 
   /* SHUL SEARCHABLE DROPDOWN */
-  .shul-dropdown { position:absolute; left:0; right:0; background:var(--white); border:1.5px solid var(--gold); border-radius:10px; max-height:260px; overflow-y:auto; z-index:150; box-shadow:0 8px 24px rgba(15,30,46,0.15); margin-top:2px; }
+  .shul-dropdown { position:fixed; background:var(--white); border:1.5px solid var(--gold); border-radius:10px; max-height:50vh; overflow-y:auto; z-index:1000; box-shadow:0 8px 32px rgba(15,30,46,0.22); width:calc(100% - 32px); left:16px; }
   .shul-opt { padding:10px 14px; font-size:0.85rem; cursor:pointer; color:var(--navy); transition:background 0.12s; }
   .shul-opt:hover { background:var(--cream); color:var(--gold); font-weight:600; }
   .shul-group { padding:6px 14px 4px; font-size:0.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; background:var(--cream); border-top:1px solid var(--border); }
@@ -3235,21 +3235,39 @@ function buildShulHTML(prefix, filter) {
   return html||'<div class="shul-opt" style="color:var(--muted);cursor:default">No results — try different spelling</div>';
 }
 function showShulList(prefix){
-  const id=prefix==='l'?'l-shul-list':'c-shul-list';
-  const el=document.getElementById(id); if(!el) return;
-  el.innerHTML=buildShulHTML(prefix,''); el.style.display='block';
-  setTimeout(()=>document.addEventListener('click',function h(e){
-    if(!e.target.closest('#'+id)&&!e.target.closest('#'+(prefix==='l'?'l-area-search':'c-areas-search'))){
-      el.style.display='none';document.removeEventListener('click',h);
-    }
-  },{capture:true}),300);
+  const inputId = prefix==='l' ? 'l-area-search' : 'c-areas-search';
+  const listId  = prefix==='l' ? 'l-shul-list'   : 'c-shul-list';
+  const input = document.getElementById(inputId);
+  const el    = document.getElementById(listId);
+  if (!el || !input) return;
+  el.innerHTML = buildShulHTML(prefix, '');
+
+  // Position fixed just below the input
+  const rect = input.getBoundingClientRect();
+  el.style.top  = (rect.bottom + 4) + 'px';
+  el.style.display = 'block';
+
+  // Close when tapping anywhere else
+  setTimeout(() => {
+    document.addEventListener('click', function h(e) {
+      if (!el.contains(e.target) && e.target !== input) {
+        el.style.display = 'none';
+        document.removeEventListener('click', h);
+      }
+    }, { capture: true });
+  }, 300);
 }
 function filterShuls(prefix){
-  const sid=prefix==='l'?'l-area-search':'c-areas-search';
-  const lid=prefix==='l'?'l-shul-list':'c-shul-list';
-  const el=document.getElementById(lid); if(!el) return;
-  const q=(document.getElementById(sid)||{}).value||'';
-  el.innerHTML=buildShulHTML(prefix,q); el.style.display='block';
+  const inputId = prefix==='l' ? 'l-area-search' : 'c-areas-search';
+  const listId  = prefix==='l' ? 'l-shul-list'   : 'c-shul-list';
+  const input = document.getElementById(inputId);
+  const el    = document.getElementById(listId);
+  if (!el || !input) return;
+  const q = input.value || '';
+  el.innerHTML = buildShulHTML(prefix, q);
+  const rect = input.getBoundingClientRect();
+  el.style.top = (rect.bottom + 4) + 'px';
+  el.style.display = 'block';
 }
 function pickShul(prefix,val,label){
   const hid=prefix==='l'?'l-area':'c-areas';
