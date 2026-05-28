@@ -587,7 +587,7 @@
 
   <div class="form-card">
     <div class="form-title">📍 Location</div>
-    <div class="fg"><label>Street Address *</label><input type="text" id="l-address" placeholder="e.g. 1423 45th St, Brooklyn, NY 11219" /></div>
+    <div class="fg"><label>Street Address <span style="font-size:0.68rem;color:var(--muted);font-weight:400">(or use "Near Shul" below — address optional if exclusive)</span></label><input type="text" id="l-address" placeholder="e.g. 1423 45th St — or leave blank and use Near Shul" /></div>
     <div class="row">
       <div class="fg"><label>Neighborhood / Near Shul</label>
         <input type="text" id="l-area-search" placeholder="🔍 Type shul name or avenue..." oninput="filterShuls('l')" onfocus="showShulList('l')" autocomplete="off" style="margin-bottom:4px;"/>
@@ -1247,8 +1247,10 @@ function getChecked() {
 
 /* ── LISTINGS ── */
 async function addListing() {
-  const address = document.getElementById('l-address').value.trim();
-  if (!address) { toast('⚠️ Please enter an address.'); return; }
+  const address = document.getElementById('l-address').value.trim()
+    || document.getElementById('l-area-display').textContent.replace('📍 ','').trim()
+    || 'Address on Request';
+  if (!address) { toast('⚠️ Please enter an address or select a neighborhood.'); return; }
 
   const saveBtn = document.querySelector('[onclick="addListing()"]');
   if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Saving…'; }
@@ -3236,7 +3238,11 @@ function showShulList(prefix){
   const id=prefix==='l'?'l-shul-list':'c-shul-list';
   const el=document.getElementById(id); if(!el) return;
   el.innerHTML=buildShulHTML(prefix,''); el.style.display='block';
-  setTimeout(()=>document.addEventListener('click',function h(e){if(!e.target.closest('.fg')){el.style.display='none';document.removeEventListener('click',h);}},{capture:true}),100);
+  setTimeout(()=>document.addEventListener('click',function h(e){
+    if(!e.target.closest('#'+id)&&!e.target.closest('#'+(prefix==='l'?'l-area-search':'c-areas-search'))){
+      el.style.display='none';document.removeEventListener('click',h);
+    }
+  },{capture:true}),300);
 }
 function filterShuls(prefix){
   const sid=prefix==='l'?'l-area-search':'c-areas-search';
