@@ -582,6 +582,7 @@
     </label>
     <input type="file" id="l-flyer" accept="image/*" style="display:none" onchange="handleFlyer(this)" />
     <div style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:6px;">Upload your designed flyer — it will display on landerbuiltrealty.com automatically.</div>
+    <div id="flyer-ai-status" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:0.82rem;font-weight:600;background:var(--cream);border:1.5px solid var(--border);color:var(--navy);text-align:center;transition:all 0.3s;"></div>
   </div>
 
   <div class="form-card">
@@ -774,6 +775,7 @@
   </div>
 
   <button class="btn btn-navy btn-full" style="font-size:1rem;padding:16px;border-radius:12px;margin-bottom:10px;" onclick="addListing()">💾 Save & Post Listing</button>
+  <button class="btn btn-full" style="font-size:0.9rem;padding:14px;border-radius:12px;margin-bottom:10px;background:#fff8e6;color:#92400e;border:1.5px solid #f59e0b;font-weight:700;" onclick="genLuachAdFromForm()">📰 Generate Luach Hatzibur Ad</button>
 
   <div class="list-header" style="margin-top:24px;">
     <div style="font-family:'Playfair Display',serif; font-size:1.1rem">Saved Listings</div>
@@ -948,12 +950,83 @@ function handleFlyer(input) {
   flyerFileName = file.name;
   flyerMime = file.type;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     flyerData = e.target.result;
     document.getElementById('flyer-preview-img').src = flyerData;
     document.getElementById('flyer-name').textContent = file.name;
     document.getElementById('flyer-preview').style.display = 'block';
     document.getElementById('flyer-label').style.display = 'none';
+
+    // AI auto-fill
+    const aiBtn = document.getElementById('flyer-ai-status');
+    if (aiBtn) { aiBtn.style.display = 'block'; aiBtn.textContent = '\u{1F916} Reading flyer\u2026'; }
+    try {
+      const base64 = flyerData.split(',')[1];
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: flyerMime, data: base64 } },
+              { type: 'text', text: 'Extract all real estate listing details from this flyer. Return ONLY a JSON object with these exact keys (use empty string "" if not found):\n{\n  "address": "full street address",\n  "zip": "5-digit zip only",\n  "price": "price as shown e.g. $850,000 or $3,200/mo",\n  "salerent": "Sale" or "Rent",\n  "type": "one of: House, Apartment, Condo, Multi-Family, Commercial, Land, Other",\n  "attached": "one of: Detached, Semi-Detached, Attached (Townhouse), N/A (Apt/Condo)",\n  "beds": "number as string e.g. 4",\n  "baths": "number as string e.g. 2",\n  "sqft": "approximate sqft as string e.g. 1800",\n  "floor": "floor if apartment e.g. 2nd Floor",\n  "nego": "one of: Firm, Negotiable, Best Offer, empty string",\n  "tax": "monthly tax e.g. $800/mo",\n  "mls": "MLS number if shown",\n  "avail": "one of: Immediately, 30 Days, 60 Days, TBD, empty string",\n  "notes": "any extra details, features, condition, highlights",\n  "features": ["array of any that apply from: Garage, Driveway, Backyard, Basement, Sukkah Porch, In-Unit Laundry, Central A/C, Central Heat, Dishwasher, Updated Kitchen, Updated Bathroom, Hardwood Floors, Extra Storage, Elevator, Shabbos Elevator, Pets Allowed"]\n}' }
+            ]
+          }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.find(b => b.type === 'text')?.text || '';
+      const json = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+      set('l-address', json.address);
+      set('l-zip',     json.zip);
+      set('l-price',   json.price);
+      set('l-tax',     json.tax);
+      set('l-mls',     json.mls);
+      set('l-sqft',    json.sqft);
+      set('l-notes',   json.notes);
+
+      const setSelect = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el || !val) return;
+        const opt = Array.from(el.options).find(o => o.value.toLowerCase() === String(val).toLowerCase());
+        if (opt) el.value = opt.value;
+      };
+      setSelect('l-salerent', json.salerent);
+      setSelect('l-type',     json.type);
+      setSelect('l-attached', json.attached);
+      setSelect('l-beds',     json.beds);
+      setSelect('l-baths',    json.baths);
+      setSelect('l-floor',    json.floor);
+      setSelect('l-nego',     json.nego);
+      setSelect('l-avail',    json.avail);
+
+      const featureMap = {
+        'Garage':'garage','Driveway':'driveway','Backyard':'backyard','Basement':'basement',
+        'Sukkah Porch':'sukkah','In-Unit Laundry':'laundry','Central A/C':'ac',
+        'Central Heat':'heat','Dishwasher':'dishwasher','Updated Kitchen':'newkitchen',
+        'Updated Bathroom':'newbath','Hardwood Floors':'hardwood','Extra Storage':'storage',
+        'Elevator':'elevator','Shabbos Elevator':'shabbos','Pets Allowed':'pets'
+      };
+      (json.features || []).forEach(f => {
+        const cbId = featureMap[f];
+        if (cbId) { const cb = document.getElementById('f-' + cbId); if (cb) cb.checked = true; }
+      });
+
+      if (aiBtn) {
+        aiBtn.textContent = '\u2705 Form filled from flyer \u2014 review & save!';
+        aiBtn.style.background = '#efffef';
+        aiBtn.style.color = '#2d6a4f';
+        aiBtn.style.borderColor = '#b7e4b7';
+      }
+      toast('\u2705 Flyer read! Review the details below.');
+    } catch(err) {
+      if (aiBtn) { aiBtn.textContent = '\u26a0\ufe0f Could not read flyer automatically \u2014 fill in manually.'; }
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -1293,6 +1366,7 @@ function renderListings() {
         <a href="#" onclick="shareWhatsApp('${l.id}');return false;" class="btn btn-whatsapp">📲 WhatsApp</a>
         <a href="#" onclick="shareSMS('${l.id}');return false;" class="btn btn-sms">💬 Text</a>
         <button class="btn btn-copy-listing" onclick="copyListing('${l.id}')">📋 Copy</button>
+        <button class="btn" onclick="genLuachAd('${l.id}')" style="font-size:0.72rem;padding:5px 10px;background:#fff8e6;color:#92400e;border:1.5px solid #f59e0b;border-radius:6px;font-weight:700;" title="Generate Luach Hatzibur ad">📰 Luach Ad</button>
         <button class="btn" onclick="toggleFeatured(${l.id})" style="font-size:0.72rem;padding:5px 10px;background:${l.featured?'var(--gold)':'var(--border)'};color:${l.featured?'var(--navy)':'var(--muted)'};border:none;border-radius:6px;" title="${l.featured?'Remove from homepage':'Feature on homepage'}">⭐</button>
         <button class="btn" onclick="markSold(${l.id})" style="font-size:0.72rem;padding:5px 10px;background:${l.status==='Sold'?'var(--green)':'var(--border)'};color:${l.status==='Sold'?'white':'var(--muted)'};border:none;border-radius:6px;" title="${l.status==='Sold'?'Mark as Active':'Mark as Sold'}">✅ ${l.status==='Sold'?'Sold':'Mark Sold'}</button>
         <button class="btn btn-del" onclick="delListing(${l.id})">🗑</button>
@@ -2953,7 +3027,123 @@ Return [] if nothing matches.`;
   btn.disabled = false; btn.textContent = '📰 Scan Now';
 }
 
-/* ── SHUL SEARCHABLE DROPDOWN ── */
+/* ── LUACH AD GENERATOR ── */
+async function genLuachAd(id) {
+  const l = listings.find(l => String(l.id) === String(id));
+  if (!l) return;
+
+  const modal   = document.getElementById('luach-modal');
+  const loading = document.getElementById('luach-ad-loading');
+  const result  = document.getElementById('luach-ad-result');
+  const textarea= document.getElementById('luach-ad-text');
+
+  modal.style.display   = 'flex';
+  loading.style.display = 'block';
+  result.style.display  = 'none';
+  textarea.value        = '';
+
+  const details = [
+    l.salerent === 'Sale' ? 'FOR SALE' : 'FOR RENT',
+    l.address,
+    l.type,
+    l.attached && l.attached !== 'N/A (Apt/Condo)' ? l.attached : '',
+    l.beds ? l.beds + ' bedrooms' : '',
+    l.baths ? l.baths + ' bathrooms' : '',
+    l.sqft  ? l.sqft + ' sqft' : '',
+    l.floor ? l.floor : '',
+    l.price ? 'Price: ' + l.price : '',
+    l.nego  ? l.nego : '',
+    l.tax   ? 'Taxes: ' + l.tax : '',
+    l.avail ? 'Available: ' + l.avail : '',
+    l.features && l.features.length ? 'Features: ' + l.features.join(', ') : '',
+    l.notes ? l.notes : '',
+    l.mls   ? 'MLS# ' + l.mls : ''
+  ].filter(Boolean).join(' | ');
+
+  const prompt = `You are writing a real estate classified ad for the Luach Hatzibur, a popular Boro Park Brooklyn Jewish community daily publication. Ads are short, punchy, Hebrew/Yiddish-friendly, and written in the style of a Boro Park real estate ad.
+
+LISTING DETAILS:
+${details}
+BROKER: Lander Built Realty · 917-567-1780 · YN@LanderBuiltRealty.com
+
+Write a Luach Hatzibur classified ad. Rules:
+- Max 4-5 lines
+- Start with FOR SALE or FOR RENT in bold caps
+- Include address, key features, price if available
+- End with broker phone number
+- Use the style of a typical Luach Hatzibur real estate ad — brief, clear, credible
+- No fluff, no full sentences — punchy classified style
+- You may use common Boro Park shorthand like "4BR/2BA", "near shul", "quiet block", "immediate occupancy"
+
+Return ONLY the ad text, nothing else.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const adText = data.content?.find(b => b.type === 'text')?.text?.trim() || '';
+    textarea.value        = adText;
+    loading.style.display = 'none';
+    result.style.display  = 'block';
+  } catch(e) {
+    loading.style.display = 'none';
+    result.style.display  = 'block';
+    textarea.value = 'Could not generate ad — check your connection and try again.';
+  }
+}
+
+// Also callable from flyer form (before listing is saved)
+async function genLuachAdFromForm() {
+  const address  = document.getElementById('l-address')?.value.trim();
+  if (!address) { toast('⚠️ Please enter an address first.'); return; }
+  const tempListing = {
+    id: 'form',
+    address,
+    area:     document.getElementById('l-area')?.value || '',
+    type:     document.getElementById('l-type')?.value || '',
+    salerent: document.getElementById('l-salerent')?.value || 'Sale',
+    attached: document.getElementById('l-attached')?.value || '',
+    beds:     document.getElementById('l-beds')?.value || '',
+    baths:    document.getElementById('l-baths')?.value || '',
+    sqft:     document.getElementById('l-sqft')?.value || '',
+    floor:    document.getElementById('l-floor')?.value || '',
+    price:    document.getElementById('l-price')?.value.trim() || '',
+    nego:     document.getElementById('l-nego')?.value || '',
+    tax:      document.getElementById('l-tax')?.value.trim() || '',
+    mls:      document.getElementById('l-mls')?.value.trim() || '',
+    avail:    document.getElementById('l-avail')?.value || '',
+    features: getChecked(),
+    notes:    document.getElementById('l-notes')?.value.trim() || '',
+  };
+  // Temporarily add so genLuachAd can find it
+  listings.unshift(tempListing);
+  await genLuachAd('form');
+  listings.shift();
+}
+
+function copyLuachAd() {
+  const text = document.getElementById('luach-ad-text').value;
+  navigator.clipboard.writeText(text).then(() => toast('📋 Ad copied!')).catch(() => toast('Long-press to copy manually.'));
+}
+function emailLuachAd() {
+  const text = document.getElementById('luach-ad-text').value;
+  const subject = encodeURIComponent('Real Estate Classified Ad — Lander Built Realty');
+  const body    = encodeURIComponent(text + '\n\n— Lander Built Realty\n917-567-1780\nYN@LanderBuiltRealty.com');
+  window.open('mailto:luachads@gmail.com?subject=' + subject + '&body=' + body);
+}
+function whatsappLuachAd() {
+  const text = document.getElementById('luach-ad-text').value;
+  const msg  = encodeURIComponent(text + '\n\n— Lander Built Realty · 917-567-1780');
+  window.open('https://wa.me/17183034300?text=' + msg, '_blank');
+}
+
 const SHUL_LIST = [
   {group:'BY AVENUE'},
   {label:'13th Ave corridor',val:'13th Ave corridor'},
@@ -3066,6 +3256,34 @@ function pickShul(prefix,val,label){
   const l=document.getElementById(lid); if(l) l.style.display='none';
 }
 </script>
+
+<!-- LUACH AD MODAL -->
+<div id="luach-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--white);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:540px;max-height:88vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);">📰 Luach Hatzibur Ad</div>
+      <button onclick="document.getElementById('luach-modal').style.display='none'" style="background:none;border:none;font-size:1.7rem;cursor:pointer;color:var(--muted);line-height:1;">×</button>
+    </div>
+    <div id="luach-ad-loading" style="text-align:center;padding:30px 20px;display:none;">
+      <div class="spinner" style="margin:0 auto 12px;"></div>
+      <div style="font-size:0.85rem;color:var(--muted);">Writing your Luach ad…</div>
+    </div>
+    <div id="luach-ad-result" style="display:none;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Ad Text — ready to submit</div>
+      <textarea id="luach-ad-text" style="width:100%;min-height:180px;padding:12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--navy);background:var(--cream);resize:vertical;outline:none;line-height:1.6;"></textarea>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;margin-bottom:14px;">✏️ Edit before copying if needed</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="copyLuachAd()" class="btn btn-navy" style="flex:1;padding:13px;">📋 Copy Ad</button>
+        <button onclick="emailLuachAd()" class="btn" style="flex:1;padding:13px;background:#c9a84c;color:#0f1e2e;border:none;border-radius:8px;font-weight:700;">📧 Email to Luach</button>
+        <button onclick="whatsappLuachAd()" class="btn" style="flex:1;padding:13px;background:#25d366;color:white;border:none;border-radius:8px;font-weight:700;">📲 WhatsApp Luach</button>
+      </div>
+      <div style="margin-top:12px;font-size:0.78rem;color:var(--muted);line-height:1.7;">
+        📧 <strong>luachads@gmail.com</strong> &nbsp;·&nbsp; 📞 <a href="tel:7183034300" style="color:var(--gold);">718-303-4300</a><br>
+        🕐 Sun 12–8pm · Mon–Wed 10am–8pm · Thu 10am–9pm
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- QUICK LOG MODAL -->
 <div id="quick-log-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;">
