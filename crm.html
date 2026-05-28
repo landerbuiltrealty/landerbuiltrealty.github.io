@@ -867,7 +867,75 @@
 
 <script>
 const BROKER_EMAIL = 'YN@LanderBuiltRealty.com';
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbynI-e97XQWpTiFHkQiOUnVPewjumY9sstYwqwvAe55qZhieWXfmbfgbGXqvLicnwI/exec';
+
+/* ═══════════════════════════════════════════════════════════════
+   STORAGE PROVIDER CONFIG
+   To switch providers, change STORAGE_PROVIDER and fill in the
+   credentials for that provider. Everything else is automatic.
+
+   Options:
+     'google_drive'  -- free, already set up (current)
+     'aws_s3'        -- paste your S3_BUCKET + S3_API_URL below
+     'cloudinary'    -- paste your CLOUDINARY_URL below
+
+   When switching: update STORAGE_PROVIDER + the matching creds.
+   No other code changes needed anywhere.
+=============================================================== */
+const STORAGE_PROVIDER = 'google_drive';
+
+const STORAGE_CONFIG = {
+  google_drive: {
+    gasUrl: 'https://script.google.com/macros/s/AKfycbynI-e97XQWpTiFHkQiOUnVPewjumY9sstYwqwvAe55qZhieWXfmbfgbGXqvLicnwI/exec'
+  },
+  aws_s3: {
+    apiUrl: '',   // paste your S3 API Gateway URL here when ready
+    bucket: ''    // paste your S3 bucket name here when ready
+  },
+  cloudinary: {
+    uploadUrl: '' // paste your Cloudinary unsigned upload URL here when ready
+  }
+};
+
+// Single upload function -- routes to whichever provider is active
+async function uploadImageToStorage(base64Data, mimeType, fileName) {
+  const pure = base64Data.split(',')[1];
+
+  if (STORAGE_PROVIDER === 'google_drive') {
+    const res = await fetch(STORAGE_CONFIG.google_drive.gasUrl, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'uploadFlyer', imageData: pure, mimeType, fileName })
+    });
+    const json = await res.json();
+    if (json.success) return json.fileUrl;
+    throw new Error(json.error || 'Google Drive upload failed');
+  }
+
+  if (STORAGE_PROVIDER === 'aws_s3') {
+    const res = await fetch(STORAGE_CONFIG.aws_s3.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageData: pure, mimeType, fileName, bucket: STORAGE_CONFIG.aws_s3.bucket })
+    });
+    const json = await res.json();
+    if (json.url) return json.url;
+    throw new Error(json.error || 'S3 upload failed');
+  }
+
+  if (STORAGE_PROVIDER === 'cloudinary') {
+    const formData = new FormData();
+    const blob = await fetch(base64Data).then(r => r.blob());
+    formData.append('file', blob, fileName);
+    const res = await fetch(STORAGE_CONFIG.cloudinary.uploadUrl, { method: 'POST', body: formData });
+    const json = await res.json();
+    if (json.secure_url) return json.secure_url;
+    throw new Error(json.error?.message || 'Cloudinary upload failed');
+  }
+
+  throw new Error('Unknown STORAGE_PROVIDER: ' + STORAGE_PROVIDER);
+}
+
+// Keep GAS_URL accessible for Sheets sync
+const GAS_URL = STORAGE_CONFIG.google_drive.gasUrl;
 
 /* ── FLYER HANDLER ── */
 let flyerData = null;
@@ -897,16 +965,8 @@ function removeFlyer() {
   document.getElementById('flyer-label').style.display = 'flex';
 }
 
-async function uploadFlyerToDrive(base64Data, mimeType, fileName) {
-  const pure = base64Data.split(',')[1];
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'uploadFlyer', imageData: pure, mimeType, fileName })
-  });
-  const json = await res.json();
-  if (json.success) return json.fileUrl;
-  throw new Error(json.error || 'Upload failed');
-}
+// Alias kept so nothing else breaks
+const uploadFlyerToDrive = uploadImageToStorage;
 
 async function syncListingToSheets(listing, flyerUrl) {
   await fetch(GAS_URL, {
@@ -942,6 +1002,7 @@ async function deleteListingFromSheets(id) {
 }
 
 
+let clients  = JSON.parse(localStorage.getItem('lbr_clients')  || '[]');
 let listings = JSON.parse(localStorage.getItem('lbr_listings') || '[]');
 let matchCount = parseInt(localStorage.getItem('lbr_mc') || '0');
 let upgrades = JSON.parse(localStorage.getItem('lbr_upgrades') || '[]');
@@ -1120,13 +1181,27 @@ async function addListing() {
   if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Saving…'; }
 
   let flyerUrl = '';
+  let uploadedPhotoUrls = [];
+
   try {
     if (flyerData) {
       toast('📤 Uploading flyer…');
-      flyerUrl = await uploadFlyerToDrive(flyerData, flyerMime, flyerFileName);
+      flyerUrl = await uploadImageToStorage(flyerData, flyerMime, flyerFileName);
     }
   } catch(e) {
     toast('⚠️ Flyer upload failed — listing saved locally only.');
+  }
+
+  if (listingPhotos.length > 0) {
+    toast(`📤 Uploading ${listingPhotos.length} photo${listingPhotos.length>1?'s':''}...`);
+    for (let i = 0; i < listingPhotos.length; i++) {
+      try {
+        const url = await uploadImageToStorage(listingPhotos[i], 'image/jpeg', `photo_${Date.now()}_${i}.jpg`);
+        uploadedPhotoUrls.push(url);
+      } catch(e) {
+        uploadedPhotoUrls.push(listingPhotos[i]); // fallback: keep local base64
+      }
+    }
   }
 
   const listing = {
@@ -1152,7 +1227,7 @@ async function addListing() {
     features: getChecked(),
     notes:    document.getElementById('l-notes').value.trim(),
     featured: document.getElementById('l-featured').checked,
-    photos:   [...listingPhotos],
+    photos:   uploadedPhotoUrls.length > 0 ? uploadedPhotoUrls : [...listingPhotos],
     flyerUrl,
     added:    new Date().toLocaleDateString()
   };
@@ -1194,7 +1269,7 @@ function renderListings() {
     const shareText = encodeURIComponent(`🏠 *${l.salerent==='Sale'?'FOR SALE':'FOR RENT'}* — ${l.address}\n💰 ${l.price||'Price on Request'}\n🛏 ${l.beds} bed · 🚿 ${l.baths} bath · ${l.type}${l.attached&&l.attached!=='N/A (Apt/Condo)'?' · '+l.attached:''}\n📍 ${l.area||'Boro Park'}${l.zip?' '+l.zip:''}\n${l.features&&l.features.length?'✅ '+l.features.join(', ')+'\n':''}${l.notes?'📝 '+l.notes+'\n':''}📞 Call/Text: 917-567-1780\n🌐 landerbuiltrealty.com`);
     return `<div class="card">
       ${l.flyerUrl?`<div style="margin-bottom:12px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);"><img src="${l.flyerUrl}" style="width:100%;display:block;" loading="lazy"/><div style="padding:5px 10px;background:var(--cream);font-size:0.72rem;color:var(--muted);">📄 Flyer — live on website</div></div>`:''}
-      ${!l.flyerUrl && l.photos&&l.photos.length?`<div style="display:grid;grid-template-columns:repeat(${Math.min(l.photos.length,3)},1fr);gap:6px;margin-bottom:12px;border-radius:10px;overflow:hidden;">${l.photos.slice(0,3).map(p=>`<img src="${p}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;"/>`).join('')}</div>`:''}
+      ${l.photos&&l.photos.length?`<div style="display:grid;grid-template-columns:repeat(${Math.min(l.photos.length,3)},1fr);gap:6px;margin-bottom:12px;border-radius:10px;overflow:hidden;">${l.photos.slice(0,6).map(p=>`<img src="${p}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;" loading="lazy"/>`).join('')}</div>`:''}
       <div class="card-header">
         <div><div class="card-name">${l.address}${l.featured?` <span style="background:var(--gold);color:var(--navy);font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:0.06em;vertical-align:middle;">⭐ FEATURED</span>`:''}</div><div class="card-detail">📍 ${l.area||''}${l.zip?' · '+l.zip:''}</div></div>
         <span class="badge ${l.salerent==='Sale'?'b-sale':'b-forrent'}">${l.salerent==='Sale'?'For Sale':'For Rent'}</span>
@@ -1480,6 +1555,16 @@ showPage = function(id) {
   _origShowPage(id);
   if(id==='reminders') renderReminders();
   if(id==='dashboard') renderReminders();
+};
+
+const LUACH_DAYS = {
+  0: { name: 'Sunday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/sunday.pdf' },
+  1: { name: 'Monday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-10.pdf' },
+  2: { name: 'Tuesday',   pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-11.pdf' },
+  3: { name: 'Wednesday', pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-12.pdf' },
+  4: { name: 'Thursday',  pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/Thursday.pdf' },
+  5: { name: 'Shabbos',   pdf: null },
+  6: { name: 'Sunday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/sunday.pdf' },
 };
 
 // Init reminders on load
@@ -1825,16 +1910,6 @@ function openChainEmail(i) {
 
 // Daily Luach PDF links — fetched from dailyluach.com
 // These update weekly; format is consistent
-const LUACH_DAYS = {
-  0: { name: 'Sunday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/sunday.pdf' },
-  1: { name: 'Monday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-10.pdf' },
-  2: { name: 'Tuesday',   pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-11.pdf' },
-  3: { name: 'Wednesday', pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/issue-12.pdf' },
-  4: { name: 'Thursday',  pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/Thursday.pdf' },
-  5: { name: 'Shabbos',   pdf: null },
-  6: { name: 'Sunday',    pdf: 'https://dailyluach.com/wp-content/uploads/2026/04/sunday.pdf' },
-};
-
 async function scanKolBerama() {
   const btn = document.getElementById('kolberama-scan-btn');
   const res = document.getElementById('scan-results');
@@ -2316,7 +2391,7 @@ Return [] if no real estate ads found.`;
 ═══════════════════════════════════════════ */
 
 const BROKER_PHONE = '9175671780';
-const BROKER_EMAIL = 'YN@LanderBuiltRealty.com';
+// BROKER_EMAIL already declared above
 
 // ── MOBILE MENU ──
 function toggleMenu(){
@@ -2785,14 +2860,15 @@ function renderSoldGrid(){
 }
 
 // ── INIT ──
-filterListings();
-renderFeaturedListing();
-renderSoldGrid();
-buildFAQ();
-calcMortgage();
+if(document.getElementById('search-results')) filterListings();
+if(document.getElementById('featured-listing')) renderFeaturedListing();
+if(document.getElementById('sold-grid')) renderSoldGrid();
+if(document.getElementById('faq-list')) buildFAQ();
+if(document.getElementById('mortgage-result')) calcMortgage();
 
 
-/* ── SHUL SEARCHABLE DROPDOWN ── */
+/* ── SCANNER ── */
+async function runScanner() {
   const url   = document.getElementById('scan-url').value.trim();
   if (!url) { toast('⚠️ Please paste a website URL first.'); return; }
   const mode  = document.getElementById('scan-mode').value;
@@ -2989,6 +3065,7 @@ function pickShul(prefix,val,label){
   const d=document.getElementById(did); if(d) d.textContent='📍 '+label;
   const l=document.getElementById(lid); if(l) l.style.display='none';
 }
+</script>
 
 <!-- QUICK LOG MODAL -->
 <div id="quick-log-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;">
