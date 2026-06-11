@@ -260,6 +260,16 @@
     </div>
   </div>
 
+  <!-- EXISTING CLIENT SEARCH -->
+  <div class="form-card" style="border:1.5px solid var(--gold);background:linear-gradient(135deg,#fffbf0,#fff8e6);">
+    <div class="form-title" style="color:var(--navy);">🔍 Calling client already in CRM?</div>
+    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Search by name, phone, or address they called about. One tap opens their card to log the call.</div>
+    <div style="position:relative;">
+      <input type="text" id="existing-client-search" placeholder="Type name, phone, or listing address..." oninput="searchExistingClients()" autocomplete="off" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--white);outline:none;" onfocus="searchExistingClients()" />
+      <div id="existing-client-results" style="display:none;position:absolute;left:0;right:0;background:var(--white);border:1.5px solid var(--gold);border-radius:10px;box-shadow:0 8px 32px rgba(15,30,46,0.18);z-index:500;max-height:260px;overflow-y:auto;margin-top:4px;"></div>
+    </div>
+  </div>
+
   <div class="form-card">
     <div class="form-title">+ New Client</div>
     <div class="row">
@@ -315,6 +325,65 @@
       <input type="text" id="c-areas-extra" placeholder="e.g. must be walking distance to shul, specific block only..." />
     </div>
     <div class="fg"><label>Special Requests / Notes</label><textarea id="c-notes" placeholder="e.g. needs garage, no HOA, good schools, pet-friendly..."></textarea></div>
+
+    <!-- CALLED ABOUT TAG — MULTI -->
+    <div style="background:linear-gradient(135deg,#fffbf0,#fff8e6);border:1.5px solid var(--gold);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">🏷️ Called About — Which Listing(s)?</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Search by tag, address, or seller name. Each one is logged with today's date. Add as many as needed.</div>
+      <div id="called-about-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:0;"></div>
+      <div style="position:relative;">
+        <input type="text" id="c-called-about-search" placeholder="🔍 Search listings by tag, address, seller..." oninput="searchCalledAbout()" autocomplete="off" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--white);outline:none;" />
+        <div id="called-about-results" style="display:none;position:absolute;left:0;right:0;background:var(--white);border:1.5px solid var(--gold);border-radius:10px;box-shadow:0 8px 32px rgba(15,30,46,0.18);z-index:500;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <!-- REFERRED BY with broker dropdown -->
+    <div style="background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">🤝 Who Gave You This Client?</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Memory only — no auto commission. Commission is tracked deal-by-deal.</div>
+      <div class="row" style="margin-bottom:0;">
+        <div class="fg" style="position:relative;">
+          <label>Referred By</label>
+          <input type="text" id="c-referred-by" placeholder="Type broker or person name..." oninput="searchBrokers()" autocomplete="off" />
+          <div id="broker-results" style="display:none;position:absolute;left:0;right:0;background:var(--white);border:1.5px solid var(--gold);border-radius:10px;box-shadow:0 8px 32px rgba(15,30,46,0.18);z-index:500;max-height:200px;overflow-y:auto;margin-top:2px;"></div>
+        </div>
+        <div class="fg">
+          <label>Source</label>
+          <select id="c-source">
+            <option value="">— Select Source —</option>
+            <option value="Luach Hatzibur">📰 Luach Hatzibur</option>
+            <option value="HeimiShAgent">🏘️ HeimiShAgent.com</option>
+            <option value="Kol Berama">📻 Kol Berama</option>
+            <option value="Website">🌐 Website</option>
+            <option value="Direct Call">📞 Direct Call</option>
+            <option value="Referral — Broker">👥 Referral — Broker</option>
+            <option value="Referral — Client">🤝 Referral — Past Client</option>
+            <option value="Referral — Family/Friend">👨‍👩‍👧 Referral — Family/Friend</option>
+            <option value="Co-Broker">🤝 Co-Broker Brought Together</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT STATUS -->
+    <div class="row" style="margin-bottom:12px;">
+      <div class="fg">
+        <label>Client Status</label>
+        <select id="c-status">
+          <option value="Active">🟢 Active — Looking</option>
+          <option value="Bought-Elsewhere">🔵 Bought Elsewhere</option>
+          <option value="Changed-Mind">⚫ Changed Mind — Not Looking</option>
+          <option value="No-Budget">🔴 No Budget / Financing Fell Through</option>
+          <option value="Unresponsive">🟡 Unresponsive — Follow Up Later</option>
+          <option value="Closed-Won">✅ Closed — We Did the Deal!</option>
+        </select>
+      </div>
+      <div class="fg" id="c-status-date-row" style="display:none;">
+        <label>Status Changed</label>
+        <input type="date" id="c-status-date" />
+      </div>
+    </div>
+
     <button class="btn btn-gold btn-full" onclick="addClient()">💾 Save Client</button>
   </div>
   <div class="list-header">
@@ -692,7 +761,7 @@
 
   <div class="form-card">
     <div class="form-title">💰 Pricing</div>
-    <div class="fg"><label>Asking Price / Monthly Rent *</label><input type="text" id="l-price" placeholder="e.g. $850,000 or $3,200/mo" /></div>
+    <div class="fg"><label>Asking Price / Monthly Rent *</label><input type="text" id="l-price" placeholder="e.g. $850,000 or $3,200/mo" oninput="updateCommCalc()" /></div>
     <div class="row">
       <div class="fg"><label>Price Negotiable?</label>
         <select id="l-nego">
@@ -746,11 +815,15 @@
         </select>
       </div>
       <div class="fg"><label>Status</label>
-        <select id="l-status" onchange="toggleSoldNote(this.value)">
-          <option value="Active">Active</option>
-          <option value="Pending">Pending</option>
-          <option value="Under Contract">Under Contract</option>
+        <select id="l-status" onchange="toggleSoldNote(this.value);toggleCloseCard(this.value)">
+          <option value="Active">🟢 Active — Open</option>
+          <option value="Pending">🟡 Pending</option>
+          <option value="Under Contract">🟠 Under Contract</option>
           <option value="Sold">✅ Sold — show on website</option>
+          <option value="Closed-Pulled">🔙 Closed — Pulled</option>
+          <option value="Closed-Rented">🔑 Closed — Rented</option>
+          <option value="Closed-Expired">⏰ Closed — Expired</option>
+          <option value="Closed-Other">📁 Closed — Other</option>
         </select>
       </div>
     </div>
@@ -758,6 +831,107 @@
       <div class="fg"><label>Sold Note (optional)</label>
         <input type="text" id="l-sold-note" placeholder="e.g. Sold in 6 days · Multiple offers · Over asking"/>
       </div>
+    </div>
+  </div>
+
+  <!-- TAG NAME & SOURCE -->
+  <div class="form-card">
+    <div class="form-title">🏷️ Listing Tag & Source</div>
+    <div class="fg">
+      <label>Tag Name <span style="font-size:0.68rem;color:var(--muted);font-weight:400">(short ID — e.g. Klein-46th, Goldberg-52nd)</span></label>
+      <input type="text" id="l-tag" placeholder="e.g. Klein-46th" />
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">This tag links buyers who call about this listing. Auto-stamped with today's date.</div>
+    </div>
+    <div class="fg">
+      <label>Where did this listing come from?</label>
+      <select id="l-source">
+        <option value="">— Select Source —</option>
+        <option value="Luach Hatzibur">📰 Luach Hatzibur</option>
+        <option value="HeimiShAgent">🏘️ HeimiShAgent.com</option>
+        <option value="Kol Berama">📻 Kol Berama</option>
+        <option value="Direct — Seller Called">📞 Direct — Seller Called Me</option>
+        <option value="Referral">🤝 Referral (enter name in notes)</option>
+        <option value="MLS">🖥️ MLS</option>
+        <option value="Co-Broker">👥 Co-Broker (their listing)</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- COMMISSION -->
+  <div class="form-card">
+    <div class="form-title">💼 Commission & Deal Structure</div>
+    <div class="row">
+      <div class="fg">
+        <label>My Agreement Type</label>
+        <select id="l-agreement" onchange="updateCommCalc()">
+          <option value="Exclusive-Self">🔒 Exclusive — Selling Myself (2%)</option>
+          <option value="Exclusive-CoBroke">🔒 Exclusive — With Co-Broker (3%)</option>
+          <option value="Exclusive-Lucky">⭐ Exclusive — 4% Deal</option>
+          <option value="Non-Exclusive">🔓 Non-Exclusive</option>
+          <option value="CoBroke-Theirs">👥 Co-Broker — Their Listing</option>
+          <option value="Flat-Fee">💵 Flat Fee</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Co-Broker Split</label>
+        <select id="l-split" onchange="updateCommCalc()">
+          <option value="50-50">50 / 50</option>
+          <option value="60-40">60 / 40 (my favor)</option>
+          <option value="40-60">40 / 60 (their favor)</option>
+          <option value="N/A">N/A — no split</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="fg">
+        <label>Custom Commission %</label>
+        <input type="number" id="l-comm-pct" placeholder="e.g. 3" step="0.5" min="0" max="10" oninput="updateCommCalc()" />
+      </div>
+      <div class="fg" id="flat-fee-row" style="display:none;">
+        <label>Flat Fee Amount</label>
+        <input type="text" id="l-flat-fee" placeholder="e.g. $50,000" oninput="updateCommCalc()" />
+      </div>
+    </div>
+    <div style="background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:4px;" id="comm-calc-box">
+      <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">💰 Your Estimated Take</div>
+      <div id="comm-calc-result" style="font-size:0.88rem;color:var(--navy);line-height:1.8;">Enter listing price and agreement to calculate.</div>
+    </div>
+    <!-- Buyer-side commission -->
+    <div style="height:1px;background:var(--border);margin:14px 0;"></div>
+    <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">👤 Buyer-Side Commission (if co-broker pays you less)</div>
+    <div class="row">
+      <div class="fg">
+        <label>Broker Pays You</label>
+        <input type="text" id="l-broker-pays" placeholder="e.g. $3,000" oninput="updateCommCalc()" />
+      </div>
+      <div class="fg">
+        <label>Buyer Pays You</label>
+        <input type="text" id="l-buyer-pays" placeholder="e.g. $8,000" oninput="updateCommCalc()" />
+      </div>
+    </div>
+    <div style="font-size:0.78rem;color:var(--muted);margin-top:4px;line-height:1.5;">Use this when a co-broker says their side is small and you need to charge the buyer directly.</div>
+  </div>
+
+  <!-- CLOSE REASON (shown when status is not Active) -->
+  <div class="form-card" id="close-reason-card" style="display:none;">
+    <div class="form-title">📁 Closing Details</div>
+    <div class="fg">
+      <label>Reason Listing Closed</label>
+      <select id="l-close-reason">
+        <optgroup label="— Listing Closed —">
+          <option value="Sold">✅ Sold — Deal Closed</option>
+          <option value="Pulled-Seller">🔙 Pulled — Seller Changed Mind</option>
+          <option value="Pulled-Price">💸 Pulled — Could Not Agree on Price</option>
+          <option value="Rented">🔑 Rented</option>
+          <option value="Expired">⏰ Expired — Listing Agreement Ran Out</option>
+          <option value="Sold-Other">👥 Sold — Through Another Broker</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Close Date</label>
+      <input type="date" id="l-close-date" />
     </div>
   </div>
 
@@ -1110,7 +1284,7 @@ function showPage(id) {
   const pageEl = document.getElementById('page-' + id);
   if(pageEl) pageEl.classList.add('active');
   ['dashboard','clients','listings','match','upgrades','scanner','reminders','website'].forEach((n,i) => { if(n===id) { const btn = document.querySelectorAll('nav button')[i]; if(btn) btn.classList.add('active'); } });
-  if (id==='clients')  renderClients();
+  if (id==='clients')  { renderClients(); populateCalledAbout(); }
   if (id==='listings') renderListings();
   if (id==='upgrades') renderUpgrades();
   if (id==='reminders') renderReminders();
@@ -1143,10 +1317,20 @@ function addClient() {
     baths:   document.getElementById('c-baths').value,
     areas:   (document.getElementById('c-areas').value + (document.getElementById('c-areas-extra').value.trim() ? ' — ' + document.getElementById('c-areas-extra').value.trim() : '')),
     notes:   document.getElementById('c-notes').value.trim(),
+    calledAboutLog: [...pendingCalledAbout],
+    calledAbout: pendingCalledAbout.length ? pendingCalledAbout[pendingCalledAbout.length-1].tag : '',
+    referredBy:  document.getElementById('c-referred-by').value.trim(),
+    source:      document.getElementById('c-source').value,
+    clientStatus: document.getElementById('c-status').value,
+    clientStatusDate: document.getElementById('c-status').value !== 'Active' ? (document.getElementById('c-status-date').value || new Date().toISOString().split('T')[0]) : '',
     added:   new Date().toLocaleDateString()
   });
   save();
-  ['c-name','c-phone','c-email','c-minprice','c-maxprice','c-maxprice-income','c-income-needed','c-areas-extra','c-notes'].forEach(i => document.getElementById(i).value='');
+  ['c-name','c-phone','c-email','c-minprice','c-maxprice','c-maxprice-income','c-income-needed','c-areas-extra','c-notes','c-referred-by'].forEach(i => document.getElementById(i).value='');
+  pendingCalledAbout = [];
+  renderCalledAboutChips();
+  document.getElementById('c-source').value='';
+  document.getElementById('c-status').value='Active';
   renderClients(); toast('✅ Client saved!');
 }
 function renderClients() {
@@ -1155,7 +1339,8 @@ function renderClients() {
   const filterIntent = document.getElementById('client-filter-intent')?.value||'';
   const filterArea = (document.getElementById('client-filter-area')?.value||'').toLowerCase();
   let filtered = clients.filter(c=>{
-    const matchSearch = !search || c.name.toLowerCase().includes(search) || (c.areas||'').toLowerCase().includes(search) || (c.minprice||'').toLowerCase().includes(search) || (c.maxprice||'').toLowerCase().includes(search) || (c.notes||'').toLowerCase().includes(search);
+    const calledAboutStr = (c.calledAboutLog||[]).map(x=>x.tag+' '+(x.address||'')).join(' ').toLowerCase();
+    const matchSearch = !search || c.name.toLowerCase().includes(search) || (c.areas||'').toLowerCase().includes(search) || (c.minprice||'').toLowerCase().includes(search) || (c.maxprice||'').toLowerCase().includes(search) || (c.notes||'').toLowerCase().includes(search) || (c.phone||'').includes(search) || calledAboutStr.includes(search);
     const matchIntent = !filterIntent || c.intent===filterIntent;
     const matchArea   = !filterArea || (c.areas||'').toLowerCase().includes(filterArea);
     return matchSearch && matchIntent && matchArea;
@@ -1171,7 +1356,7 @@ function renderClients() {
       remBadge = `<div class="reminder-badge ${isPast?'overdue':isToday?'today':''}">${isPast?'⚠️ Overdue':isToday?'🔔 Due Today':'⏰'} Follow up: ${rem.date}${rem.note?' — '+rem.note:''}</div>`;
     }
     const notes = c.callLog||[];
-    return `<div class="card">
+    return `<div class="card" id="client-card-${c.id}"
       <div class="card-header">
         <div><div class="card-name">${c.name}</div>
         <div class="card-detail">${c.phone?'📞 <a href="tel:'+c.phone.replace(/\D/g,'')+'" style="color:inherit">'+c.phone+'</a>':''}${c.email?' · '+c.email:''}</div></div>
@@ -1184,7 +1369,10 @@ function renderClients() {
         ${c.incomeType&&c.incomeType!==''?`<span class="tag" style="background:#fffbf0;border-color:var(--gold);color:#92400e">${c.incomeType}</span>`:''}        ${c.beds!=='Any'?`<span class="tag">🛏 ${c.beds} bed</span>`:''}
         ${c.baths!=='Any'?`<span class="tag">🚿 ${c.baths} bath</span>`:''}
         ${c.areas?`<span class="tag">📍 ${c.areas}</span>`:''}
-      </div>
+        ${(c.calledAboutLog&&c.calledAboutLog.length?c.calledAboutLog:c.calledAbout?[{tag:c.calledAbout,date:c.added}]:[]).map(entry=>{const l=listings.find(x=>x.tag===entry.tag);const closed=l&&l.status&&l.status!=='Active'&&l.status!=='Pending'&&l.status!=='Under Contract';return `<span class="tag" style="background:${closed?'#f3f4f6':'#fffbf0'};border-color:${closed?'#9ca3af':'var(--gold)'};color:${closed?'#6b7280':'#92400e'};">🏷️ ${entry.tag}${entry.date?' · '+entry.date:''}${closed?' ✗':' ✓'}</span>`;}).join('')}
+        ${c.source?`<span class="tag" style="background:#f0f9ff;border-color:#bae6fd;color:#0369a1;">📌 ${c.source}</span>`:''}
+        ${c.referredBy?`<span class="tag" style="background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9;">🤝 Via ${c.referredBy}</span>`:''}
+        ${c.clientStatus&&c.clientStatus!=='Active'?`<span class="tag" style="background:#fef2f2;border-color:#fca5a5;color:#991b1b;">${c.clientStatus==='Closed-Won'?'✅':'⚫'} ${c.clientStatus}${c.clientStatusDate?' · '+c.clientStatusDate:''}</span>`:''}
       ${c.notes?`<div class="card-detail" style="margin-top:8px">📝 ${c.notes}</div>`:''}
       ${remBadge}
       <div class="card-detail" style="margin-top:6px;font-size:0.72rem">Added ${c.added}</div>
@@ -1195,6 +1383,9 @@ function renderClients() {
         <div class="note-add">
           <input type="text" id="note-input-${c.id}" placeholder="Add a note about this call..." />
           <button onclick="addNote(${c.id})">+ Add</button>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="openAddListingTag(${c.id})" class="btn btn-outline" style="font-size:0.73rem;padding:6px 12px;border-color:var(--gold);color:#92400e;">🏷️ Called About New Listing</button>
         </div>
       </div>
 
@@ -1299,6 +1490,17 @@ async function addListing() {
     status:   document.getElementById('l-status').value,
     soldNote: document.getElementById('l-sold-note').value.trim(),
     sold:     document.getElementById('l-status').value === 'Sold',
+    tag:      document.getElementById('l-tag').value.trim(),
+    tagDate:  new Date().toISOString().split('T')[0],
+    source:   document.getElementById('l-source').value,
+    agreement: document.getElementById('l-agreement').value,
+    split:    document.getElementById('l-split').value,
+    commPct:  document.getElementById('l-comm-pct').value,
+    flatFee:  document.getElementById('l-flat-fee').value.trim(),
+    brokerPays: document.getElementById('l-broker-pays').value.trim(),
+    buyerPays:  document.getElementById('l-buyer-pays').value.trim(),
+    closeReason: document.getElementById('l-close-reason').value,
+    closeDate:   document.getElementById('l-close-date').value,
     features: getChecked(),
     notes:    document.getElementById('l-notes').value.trim(),
     featured: document.getElementById('l-featured').checked,
@@ -1315,19 +1517,322 @@ async function addListing() {
     await syncListingToSheets(listing, flyerUrl);
   } catch(e) { /* silent — already saved locally */ }
 
-  ['l-address','l-zip','l-price','l-tax','l-mls','l-notes'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  ['l-address','l-zip','l-price','l-tax','l-mls','l-notes','l-tag','l-comm-pct','l-flat-fee','l-broker-pays','l-buyer-pays'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});;
   const featEl = document.getElementById('l-featured'); if(featEl) featEl.checked=false;
   Object.keys({garage:1,driveway:1,backyard:1,basement:1,sukkah:1,laundry:1,ac:1,heat:1,dishwasher:1,newkitchen:1,newbath:1,hardwood:1,storage:1,elevator:1,shabbos:1,pets:1}).forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.checked=false;});
   listingPhotos=[]; renderPhotoGrid();
   removeFlyer();
   if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Save & Post Listing'; }
   renderListings();
+  populateCalledAbout();
   toast('✅ Listing saved & live on your website!');
 }
 function toggleSoldNote(val){
   const row = document.getElementById('sold-note-row');
   if(row) row.style.display = val==='Sold' ? 'block' : 'none';
 }
+function toggleCloseCard(val){
+  const card = document.getElementById('close-reason-card');
+  if(card) card.style.display = val && val!=='Active' && val!=='Pending' && val!=='Under Contract' ? 'block' : 'none';
+  // set today's date as default close date
+  if(card && card.style.display==='block'){
+    const d = document.getElementById('l-close-date');
+    if(d && !d.value) d.value = new Date().toISOString().split('T')[0];
+  }
+  // show/hide flat fee row
+  const ffRow = document.getElementById('flat-fee-row');
+  // agreement drives that, not status — handled in updateCommCalc
+}
+
+function updateCommCalc(){
+  const agreement = document.getElementById('l-agreement')?.value||'';
+  const split = document.getElementById('l-split')?.value||'50-50';
+  const customPct = parseFloat(document.getElementById('l-comm-pct')?.value||'0');
+  const priceRaw = document.getElementById('l-price')?.value||'';
+  const flatFeeRaw = document.getElementById('l-flat-fee')?.value||'';
+  const brokerPays = document.getElementById('l-broker-pays')?.value||'';
+  const buyerPays  = document.getElementById('l-buyer-pays')?.value||'';
+
+  // Show/hide flat fee input
+  const ffRow = document.getElementById('flat-fee-row');
+  if(ffRow) ffRow.style.display = agreement==='Flat-Fee' ? 'flex' : 'none';
+
+  const result = document.getElementById('comm-calc-result');
+  if(!result) return;
+
+  // Parse listing price
+  const price = parseFloat(priceRaw.replace(/[^0-9.]/g,''))||0;
+
+  // Determine base % and my share %
+  let totalPct = customPct;
+  let myPct = customPct;
+
+  if(!customPct) {
+    if(agreement==='Exclusive-Self')   { totalPct=2; myPct=2; }
+    if(agreement==='Exclusive-CoBroke'){ totalPct=3; myPct=1.5; }
+    if(agreement==='Exclusive-Lucky')  { totalPct=4; myPct=2; }
+    if(agreement==='Non-Exclusive')    { totalPct=2; myPct=2; }
+    if(agreement==='CoBroke-Theirs')   { totalPct=3; myPct=1.5; }
+  } else {
+    // apply split
+    if(split==='50-50') myPct = totalPct/2;
+    else if(split==='60-40') myPct = totalPct*0.6;
+    else if(split==='40-60') myPct = totalPct*0.4;
+    else myPct = totalPct; // N/A — no split
+    if(agreement==='Exclusive-Self'||agreement==='Non-Exclusive') myPct=totalPct; // no split
+  }
+
+  // Buyer-side extra
+  const bpAmt = parseFloat((brokerPays+buyerPays).replace(/[^0-9.]/g,''))||0; // not used here directly
+  const brokerAmt = parseFloat(brokerPays.replace(/[^0-9.]/g,''))||0;
+  const buyerAmt  = parseFloat(buyerPays.replace(/[^0-9.]/g,''))||0;
+  const extraTotal = brokerAmt + buyerAmt;
+
+  let lines = [];
+
+  if(agreement==='Flat-Fee'){
+    const flat = parseFloat(flatFeeRaw.replace(/[^0-9.]/g,''))||0;
+    if(flat && price){
+      const equiv = ((flat/price)*100).toFixed(2);
+      const color = flat>=20000?'#2d6a4f':flat>=10000?'#b45309':'#a33030';
+      const emoji = flat>=20000?'🟢':flat>=10000?'🟡':'🔴';
+      lines.push(`${emoji} <strong style="color:${color}">Your Take: $${flat.toLocaleString()}</strong>`);
+      lines.push(`Equivalent: ${equiv}% of asking price`);
+      if(price) lines.push(`Standard 2% would be: $${(price*0.02).toLocaleString()}`);
+      lines.push(flat>price*0.02 ? `✅ Better than standard — take it.` : `⚠️ Below standard — negotiate or evaluate effort.`);
+    } else if(flat){
+      lines.push(`Flat fee: $${flat.toLocaleString()}`);
+    } else {
+      lines.push('Enter flat fee amount to calculate.');
+    }
+  } else if(extraTotal>0){
+    // buyer-side deal
+    const color = extraTotal>=15000?'#2d6a4f':extraTotal>=8000?'#b45309':'#a33030';
+    const emoji = extraTotal>=15000?'🟢':extraTotal>=8000?'🟡':'🔴';
+    lines.push(`${emoji} <strong style="color:${color}">Total Take: $${extraTotal.toLocaleString()}</strong>`);
+    if(brokerAmt) lines.push(`From broker: $${brokerAmt.toLocaleString()}`);
+    if(buyerAmt)  lines.push(`From buyer: $${buyerAmt.toLocaleString()}`);
+  } else if(price && myPct){
+    const myTake = price * myPct / 100;
+    const totalComm = price * totalPct / 100;
+    const color = myTake>=20000?'#2d6a4f':myTake>=10000?'#b45309':'#a33030';
+    const emoji = myTake>=20000?'🟢':myTake>=10000?'🟡':'🔴';
+    lines.push(`${emoji} <strong style="color:${color}">Your Take: $${myTake.toLocaleString()}</strong>`);
+    if(totalPct!==myPct) lines.push(`Total commission (${totalPct}%): $${totalComm.toLocaleString()}`);
+    lines.push(`Your share: ${myPct}% of $${price.toLocaleString()}`);
+    if(split!=='N/A'&&totalPct!==myPct) lines.push(`Split: ${split}`);
+  } else {
+    lines.push('Enter listing price above to see your estimated take.');
+  }
+
+  result.innerHTML = lines.join('<br/>');
+}
+
+function populateCalledAbout(){ /* replaced by searchCalledAbout */ }
+
+// Auto-show status date when client status changes
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id==='c-status'){
+    const row = document.getElementById('c-status-date-row');
+    if(row) row.style.display = e.target.value!=='Active' ? 'flex' : 'none';
+    if(e.target.value!=='Active'){
+      const d = document.getElementById('c-status-date');
+      if(d && !d.value) d.value = new Date().toISOString().split('T')[0];
+    }
+  }
+});
+
+/* ── PENDING CALLED ABOUT (new client form) ── */
+let pendingCalledAbout = [];
+
+function renderCalledAboutChips(){
+  const box = document.getElementById('called-about-chips');
+  if(!box) return;
+  if(!pendingCalledAbout.length){ box.style.display='none'; return; }
+  box.style.display='flex';
+  box.innerHTML = pendingCalledAbout.map((entry,i)=>{
+    const l = listings.find(x=>x.tag===entry.tag);
+    const closed = l&&l.status&&l.status!=='Active'&&l.status!=='Pending'&&l.status!=='Under Contract';
+    return `<span style="display:inline-flex;align-items:center;gap:5px;background:${closed?'#f3f4f6':'#fffbf0'};border:1.5px solid ${closed?'#9ca3af':'var(--gold)'};border-radius:20px;padding:4px 10px;font-size:0.75rem;color:${closed?'#6b7280':'#92400e'};font-weight:600;">🏷️ ${entry.tag}<button onclick="removePendingTag(${i})" style="background:none;border:none;cursor:pointer;font-size:0.85rem;color:var(--muted);padding:0;margin-left:2px;line-height:1;">×</button></span>`;
+  }).join('');
+}
+
+function removePendingTag(i){ pendingCalledAbout.splice(i,1); renderCalledAboutChips(); }
+
+function searchCalledAbout(){
+  const q = (document.getElementById('c-called-about-search')?.value||'').toLowerCase().trim();
+  const res = document.getElementById('called-about-results');
+  if(!res) return;
+  if(!q){ res.style.display='none'; return; }
+  const matches = listings.filter(l=> l.tag && (
+    l.tag.toLowerCase().includes(q) ||
+    l.address.toLowerCase().includes(q) ||
+    (l.notes||'').toLowerCase().includes(q) ||
+    (l.area||'').toLowerCase().includes(q)
+  )).slice(0,8);
+  if(!matches.length){ res.style.display='none'; return; }
+  const isClosed = l => l.status&&l.status!=='Active'&&l.status!=='Pending'&&l.status!=='Under Contract';
+  res.style.display='block';
+  res.innerHTML = matches.map(l=>`
+    <div onclick="addPendingCalledAbout('${l.tag}','${l.address.replace(/'/g,"\\'")}','${l.id}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background=''">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--navy);">🏷️ ${l.tag} <span style="font-size:0.68rem;font-weight:400;color:${isClosed(l)?'#a33030':'var(--green)'};">${isClosed(l)?'● Closed':'● Open'}</span></div>
+      <div style="font-size:0.75rem;color:var(--muted);">${l.address} · ${l.price||'?'} · ${l.beds} bed</div>
+    </div>`).join('');
+}
+
+function addPendingCalledAbout(tag, address, listingId){
+  if(pendingCalledAbout.find(x=>x.tag===tag)){ toast('Already added.'); return; }
+  pendingCalledAbout.push({ tag, address, listingId, date: new Date().toLocaleDateString() });
+  renderCalledAboutChips();
+  const inp = document.getElementById('c-called-about-search');
+  if(inp) inp.value='';
+  const res = document.getElementById('called-about-results');
+  if(res) res.style.display='none';
+}
+
+/* ── EXISTING CLIENT SEARCH ── */
+function searchExistingClients(){
+  const q = (document.getElementById('existing-client-search')?.value||'').toLowerCase().trim();
+  const res = document.getElementById('existing-client-results');
+  if(!res) return;
+  if(!q||q.length<2){ res.style.display='none'; return; }
+  const matches = clients.filter(c=>{
+    const calledStr = (c.calledAboutLog||[]).map(x=>x.tag+' '+(x.address||'')).join(' ').toLowerCase();
+    return c.name.toLowerCase().includes(q) ||
+      (c.phone||'').includes(q) ||
+      calledStr.includes(q);
+  }).slice(0,6);
+  if(!matches.length){ res.style.display='none'; return; }
+  res.style.display='block';
+  res.innerHTML = matches.map(c=>{
+    const tags = (c.calledAboutLog||[]).map(x=>x.tag).join(', ');
+    return `<div onclick="jumpToClient(${c.id})" style="padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background=''">
+      <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">${c.name}</div>
+      <div style="font-size:0.75rem;color:var(--muted);">${c.phone||''}${tags?' · 🏷️ '+tags:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function jumpToClient(clientId){
+  // Close dropdown
+  const res = document.getElementById('existing-client-results');
+  if(res) res.style.display='none';
+  const inp = document.getElementById('existing-client-search');
+  if(inp) inp.value='';
+  // Scroll to client card in list — render first
+  renderClients();
+  setTimeout(()=>{
+    const card = document.getElementById('client-card-'+clientId);
+    if(card){
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+      card.style.outline='2.5px solid var(--gold)';
+      setTimeout(()=>{ card.style.outline=''; },2000);
+      // Focus the note input
+      const noteInput = document.getElementById('note-input-'+clientId);
+      if(noteInput) noteInput.focus();
+    }
+  },100);
+}
+
+/* ── BROKER SEARCH (from referred-by field) ── */
+function searchBrokers(){
+  const q = (document.getElementById('c-referred-by')?.value||'').toLowerCase().trim();
+  const res = document.getElementById('broker-results');
+  if(!res) return;
+  if(!q||q.length<2){ res.style.display='none'; return; }
+  const brokers = clients.filter(c=>c.name.toLowerCase().includes('broker')&&c.name.toLowerCase().includes(q.replace('broker','').trim())||
+    (c.name.toLowerCase().includes('broker')&&q.length>=2&&c.name.toLowerCase().includes(q))
+  ).slice(0,6);
+  // Also search anyone with broker in name matching query
+  const bList = clients.filter(c=> c.name.toLowerCase().includes('broker') && (c.name.toLowerCase().includes(q)||q.includes('broker'))).slice(0,8);
+  if(!bList.length){ res.style.display='none'; return; }
+  res.style.display='block';
+  res.innerHTML = bList.map(c=>`
+    <div onclick="selectBroker('${c.name.replace(/'/g,"\\'")}','${(c.phone||'').replace(/'/g,"\\'")}');" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background=''">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--navy);">👥 ${c.name}</div>
+      <div style="font-size:0.74rem;color:var(--muted);">${c.phone||'No phone saved'}</div>
+    </div>`).join('');
+}
+
+function selectBroker(name, phone){
+  const inp = document.getElementById('c-referred-by');
+  if(inp) inp.value = name;
+  const res = document.getElementById('broker-results');
+  if(res) res.style.display='none';
+}
+
+/* ── CALLED ABOUT MODAL (from existing client card) ── */
+let camClientId = null;
+
+function openAddListingTag(clientId){
+  camClientId = clientId;
+  const c = clients.find(x=>x.id===clientId);
+  const nameEl = document.getElementById('cam-client-name');
+  if(nameEl) nameEl.textContent = c ? c.name : '';
+  const inp = document.getElementById('cam-search');
+  if(inp) inp.value='';
+  searchCAM();
+  document.getElementById('called-about-modal').style.display='flex';
+}
+
+function searchCAM(){
+  const q = (document.getElementById('cam-search')?.value||'').toLowerCase().trim();
+  const res = document.getElementById('cam-results');
+  if(!res) return;
+  const isClosed = l => l.status&&l.status!=='Active'&&l.status!=='Pending'&&l.status!=='Under Contract';
+  const show = listings.filter(l=> !l.tag ? false : (!q || l.tag.toLowerCase().includes(q) || l.address.toLowerCase().includes(q) || (l.notes||'').toLowerCase().includes(q) || (l.area||'').toLowerCase().includes(q)));
+  if(!show.length){ res.innerHTML='<div style="padding:14px;font-size:0.82rem;color:var(--muted);text-align:center;">No tagged listings found. Add a tag when creating a listing.</div>'; return; }
+  res.innerHTML = show.map(l=>`
+    <div onclick="addCalledAboutToClient(${l.id})" style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);background:${isClosed(l)?'#fafafa':''};transition:background 0.1s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='${isClosed(l)?'#fafafa':''}'">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">🏷️ ${l.tag}</div>
+          <div style="font-size:0.75rem;color:var(--muted);">${l.address} · ${l.price||'?'} · ${l.beds} bed · ${l.area||''}</div>
+        </div>
+        <span style="font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:12px;background:${isClosed(l)?'#fde8e8':'#dcfce7'};color:${isClosed(l)?'#a33030':'#166534'};">${isClosed(l)?'Closed':'Open'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function addCalledAboutToClient(listingId){
+  const c = clients.find(x=>x.id===camClientId);
+  const l = listings.find(x=>x.id===listingId);
+  if(!c||!l) return;
+  if(!c.calledAboutLog) c.calledAboutLog=[];
+  // Check not already there
+  if(c.calledAboutLog.find(x=>x.tag===l.tag)){ toast('Already logged for this client.'); return; }
+  const entry = { tag:l.tag, address:l.address, listingId:l.id, date:new Date().toLocaleDateString() };
+  c.calledAboutLog.push(entry);
+  c.calledAbout = l.tag; // keep latest as primary for backward compat
+  // Also log a call note
+  if(!c.callLog) c.callLog=[];
+  c.callLog.unshift({ date: new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), text:`🏷️ Called about: ${l.tag} — ${l.address} (${l.price||'?'})` });
+  save();
+  document.getElementById('called-about-modal').style.display='none';
+  renderClients();
+  // Scroll back to the client card
+  setTimeout(()=>{
+    const card = document.getElementById('client-card-'+camClientId);
+    if(card){ card.scrollIntoView({behavior:'smooth',block:'center'}); card.style.outline='2.5px solid var(--gold)'; setTimeout(()=>card.style.outline='',2000); }
+  },100);
+  toast(`🏷️ ${l.tag} logged for ${c.name}!`);
+}
+
+// Close dropdowns on outside tap
+document.addEventListener('click', function(e){
+  if(!e.target.closest('#existing-client-search')&&!e.target.closest('#existing-client-results')){
+    const r=document.getElementById('existing-client-results'); if(r) r.style.display='none';
+  }
+  if(!e.target.closest('#c-called-about-search')&&!e.target.closest('#called-about-results')){
+    const r=document.getElementById('called-about-results'); if(r) r.style.display='none';
+  }
+  if(!e.target.closest('#c-referred-by')&&!e.target.closest('#broker-results')){
+    const r=document.getElementById('broker-results'); if(r) r.style.display='none';
+  }
+  if(!e.target.closest('#cam-search')&&!e.target.closest('#cam-results')&&!e.target.closest('#called-about-modal')){
+    // don't close modal on outside tap of search within modal
+  }
+});
 
 function renderListings() {
   const el = document.getElementById('listings-list');
@@ -1363,6 +1868,13 @@ function renderListings() {
       ${l.features&&l.features.length?`<div class="tags" style="margin-top:8px">${l.features.map(f=>`<span class="tag" style="background:#efffef;border-color:#b7e4b7">✅ ${f}</span>`).join('')}</div>`:''}
       ${l.notes?`<div class="card-detail" style="margin-top:8px">📝 ${l.notes}</div>`:''}
       ${l.tax?`<div class="card-detail" style="margin-top:4px">🏛 Taxes: ${l.tax}</div>`:''}
+      <div class="tags" style="margin-top:8px;">
+        ${l.tag?`<span class="tag" style="background:#fffbf0;border-color:var(--gold);color:#92400e;font-weight:700;">🏷️ ${l.tag} · ${l.tagDate||l.added}</span>`:''}
+        ${l.source?`<span class="tag" style="background:#f0f9ff;border-color:#bae6fd;color:#0369a1;">📌 ${l.source}</span>`:''}
+        ${(()=>{if(!l.agreement)return '';const agLabels={'Exclusive-Self':'🔒 Exclusive (Self)','Exclusive-CoBroke':'🔒 Exclusive (Co-Broke)','Exclusive-Lucky':'⭐ Exclusive 4%','Non-Exclusive':'🔓 Non-Exclusive','CoBroke-Theirs':'👥 Co-Broker Listing','Flat-Fee':'💵 Flat Fee'};return `<span class="tag" style="background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9;">${agLabels[l.agreement]||l.agreement}</span>`;})()}
+        ${(()=>{if(!l.price)return '';const price=parseFloat((l.price||'').replace(/[^0-9.]/g,''))||0;if(!price||!l.agreement)return '';let myPct=0;if(l.agreement==='Exclusive-Self'||l.agreement==='Non-Exclusive')myPct=2;else if(l.agreement==='Exclusive-CoBroke'||l.agreement==='CoBroke-Theirs')myPct=1.5;else if(l.agreement==='Exclusive-Lucky')myPct=2;if(l.commPct)myPct=parseFloat(l.commPct)/2;if(l.agreement==='Exclusive-Self'&&l.commPct)myPct=parseFloat(l.commPct);if(l.agreement==='Flat-Fee'){const flat=parseFloat((l.flatFee||'').replace(/[^0-9.]/g,''))||0;if(flat){const color=flat>=20000?'#2d6a4f':flat>=10000?'#b45309':'#a33030';return `<span class="tag" style="background:#f0fdf4;border-color:#bbf7d0;color:${color};font-weight:700;">💰 $${flat.toLocaleString()} flat</span>`;}}if(l.brokerPays||l.buyerPays){const total=(parseFloat((l.brokerPays||'').replace(/[^0-9.]/g,''))||0)+(parseFloat((l.buyerPays||'').replace(/[^0-9.]/g,''))||0);if(total){const color=total>=15000?'#2d6a4f':total>=8000?'#b45309':'#a33030';return `<span class="tag" style="background:#f0fdf4;border-color:#bbf7d0;color:${color};font-weight:700;">💰 $${total.toLocaleString()} total</span>`;}}if(myPct&&price){const take=price*myPct/100;const color=take>=20000?'#2d6a4f':take>=10000?'#b45309':'#a33030';return `<span class="tag" style="background:#f0fdf4;border-color:#bbf7d0;color:${color};font-weight:700;">💰 ~$${take.toLocaleString()} your take</span>`;}return '';})()}
+        ${l.closeReason?`<span class="tag" style="background:#fef2f2;border-color:#fca5a5;color:#991b1b;">📁 ${l.closeReason}${l.closeDate?' · '+l.closeDate:''}</span>`:''}
+      </div>
       <div class="card-detail" style="margin-top:6px;font-size:0.72rem;display:flex;gap:12px;"><span>Added ${l.added}</span><span style="color:${l.status==='Active'?'var(--green)':l.status==='Sold'?'var(--gold)':l.status==='Pending'?'#b45309':'var(--muted)'}">● ${l.status||'Active'}</span>${l.soldNote?`<span style="color:var(--gold);font-style:italic;">${l.soldNote}</span>`:''}</div>
       <div class="share-row">
         <a href="#" onclick="shareWhatsApp('${l.id}');return false;" class="btn btn-whatsapp">📲 WhatsApp</a>
@@ -1409,12 +1921,23 @@ async function runMatching() {
   const prompt=`You are a real estate assistant for Lander Built Realty. The broker's email is ${BROKER_EMAIL}.
 
 CLIENTS:
-${clients.map((c,i)=>`${i+1}. Name:${c.name} | Intent:${c.intent} | Type:${c.proptype} | Budget:${c.minprice||'?'}-${c.maxprice||'?'}${c.maxIncomePrice?' | INCOME BUDGET up to:'+c.maxIncomePrice+' if property earns '+( c.incomeNeeded||'rental income')+' ('+( c.incomeType||'income property')+')'  :''} | Beds:${c.beds} | Baths:${c.baths} | Areas:${c.areas||'any'} | Notes:${c.notes||''} | Email:${c.email||'none'} | Phone:${c.phone||'none'}`).join('\n')}
+${clients.map((c,i)=>{
+  const calledAboutListing = c.calledAbout ? listings.find(l=>l.tag===c.calledAbout) : null;
+  const allCalledAbout = (c.calledAboutLog&&c.calledAboutLog.length) ? c.calledAboutLog : (c.calledAbout ? [{tag:c.calledAbout}] : []);
+  const refContext = allCalledAbout.length ? ` | CALLED ABOUT: ${allCalledAbout.map(entry=>{const l=listings.find(x=>x.tag===entry.tag);return l?`"${entry.tag}" (${l.address}, ${l.beds}bd, ${l.baths}ba, ${l.price||'?'}, ${l.area||''})`:entry.tag;}).join(' AND ')} — use these specs to find similar open listings` : '';
+  const referral = c.referredBy ? ` | Referred by: ${c.referredBy}` : '';
+  const src = c.source ? ` | Source: ${c.source}` : '';
+  const status = c.clientStatus && c.clientStatus!=='Active' ? ` | STATUS: ${c.clientStatus}` : '';
+  return `${i+1}. Name:${c.name} | Intent:${c.intent} | Type:${c.proptype} | Budget:${c.minprice||'?'}-${c.maxprice||'?'}${c.maxIncomePrice?' | INCOME BUDGET up to:'+c.maxIncomePrice+' if property earns '+(c.incomeNeeded||'rental income')+' ('+(c.incomeType||'income property')+')':''} | Beds:${c.beds} | Baths:${c.baths} | Areas:${c.areas||'any'} | Notes:${c.notes||''} | Email:${c.email||'none'} | Phone:${c.phone||'none'}${refContext}${referral}${src}${status}`;
+}).join('\n')}
 
 LISTINGS:
-${listings.map((l,i)=>`${i+1}. Address:${l.address} | Type:${l.type} | For:${l.salerent} | Price:${l.price||'?'} | Area:${l.area||'?'} | Beds:${l.beds} | Baths:${l.baths} | MLS:${l.mls||'n/a'} | Features:${l.notes||''}`).join('\n')}
+${listings.map((l,i)=>{
+  const isClosed = l.status && l.status!=='Active'&&l.status!=='Pending'&&l.status!=='Under Contract';
+  return `${i+1}. Tag:${l.tag||'—'} | Address:${l.address} | Type:${l.type} | For:${l.salerent} | Price:${l.price||'?'} | Area:${l.area||'?'} | Beds:${l.beds} | Baths:${l.baths} | MLS:${l.mls||'n/a'} | Features:${l.notes||''} | Status:${isClosed?'CLOSED ('+l.status+') — do not match to buyers':'Open'}`;
+}).join('\n')}
 
-Find the best client-to-listing matches. Return a JSON array only — no markdown, no extra text. Each object must have:
+Find the best client-to-listing matches. IMPORTANT: Do not match buyers to closed/sold listings. If a buyer originally called about a closed listing, use that listing's specs to find them similar open alternatives. Return a JSON array only — no markdown, no extra text. Each object must have:
 - clientName (string)
 - clientEmail (string, empty if none)
 - listingAddress (string)
@@ -3378,6 +3901,19 @@ function pickShul(prefix,val,label){
       <button onclick="saveQuickLog()" class="btn btn-navy" style="flex:1;padding:13px;">💾 Save Log</button>
       <button onclick="closeQuickLog()" class="btn btn-outline" style="padding:13px 18px;">Cancel</button>
     </div>
+  </div>
+</div>
+<!-- CALLED ABOUT MODAL (from existing client card) -->
+<div id="called-about-modal" style="display:none;position:fixed;inset:0;background:rgba(15,30,46,0.6);z-index:600;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--white);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);">🏷️ Called About Which Listing?</div>
+      <button onclick="document.getElementById('called-about-modal').style.display='none'" style="background:none;border:none;font-size:1.7rem;cursor:pointer;color:var(--muted);line-height:1;">×</button>
+    </div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;" id="cam-client-name"></div>
+    <input type="text" id="cam-search" placeholder="🔍 Search by tag, address, seller name..." oninput="searchCAM()" autocomplete="off" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--cream);outline:none;margin-bottom:8px;" />
+    <div id="cam-results" style="max-height:280px;overflow-y:auto;"></div>
+    <button onclick="document.getElementById('called-about-modal').style.display='none'" class="btn btn-outline btn-full" style="margin-top:14px;">Cancel</button>
   </div>
 </div>
 </body>
